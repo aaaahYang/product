@@ -1,9 +1,9 @@
 package com.product.dao.repository;
 
-import com.product.entity.User;
+import com.product.entity.CheckAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Integer> {
+public interface CheckAccountRepository extends JpaRepository<CheckAccount,Integer> {
 }

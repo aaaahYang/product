@@ -7,7 +7,6 @@
         <artifactId>base</artifactId>
         <groupId>com.product</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>service</artifactId>
