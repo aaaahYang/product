@@ -87,6 +87,9 @@
                         <configuration>
                             <backend>html</backend>
                             <doctype>book</doctype>
+                            <attributes>
+                                <snippets>${project.build.directory}/generated-snippets</snippets>
+                            </attributes>
                         </configuration>
                     </execution>
                 </executions>
@@ -99,27 +102,36 @@
                 </dependencies>
             </plugin>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.outputDirectory}/static/docs
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>
+                                        ${project.build.directory}/generated-docs
+                                    </directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.3.7.RELEASE</version>
                 <configuration>
                     <mainClass>com.product.web.WebApplication</mainClass>
-<!--                    <layout>ZIP</layout>-->
-<!--                    <skip>true</skip>-->
-<!--                    <includes>-->
-<!--                        <include>-->
-<!--                            <groupId>com.product</groupId>-->
-<!--                            <artifactId>entity</artifactId>-->
-<!--                        </include>-->
-<!--                        <include>-->
-<!--                            <groupId>com.product</groupId>-->
-<!--                            <artifactId>dao</artifactId>-->
-<!--                        </include>-->
-<!--                        <include>-->
-<!--                            <groupId>com.product</groupId>-->
-<!--                            <artifactId>service</artifactId>-->
-<!--                        </include>-->
-<!--                    </includes>-->
                 </configuration>
                 <executions>
                     <execution>

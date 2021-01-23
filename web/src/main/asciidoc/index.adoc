@@ -1,0 +1,12 @@
+= 客户列表接口文档
+
+/customer/list
+
+.request
+include::{snippets}/customer/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/customer/request-parameters.adoc[]
+
+.response
+include::{snippets}/customer/http-response.adoc[]

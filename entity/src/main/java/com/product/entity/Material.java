@@ -1,11 +1,14 @@
 package com.product.entity;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -16,8 +19,10 @@ public class Material {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer materialId;
 
+    @NotNull(message = "物料编码不允许为空")
     private String materialCode;
 
+    @NotNull(message = "物料名称不允许为空")
     private String materialName;
 
     private String materialType;
@@ -26,8 +31,10 @@ public class Material {
 
     private String remark;
 
+    @CreatedDate
     private Date createTime;
 
+    @LastModifiedDate
     private Date updateTime;
 
     private Integer operator;

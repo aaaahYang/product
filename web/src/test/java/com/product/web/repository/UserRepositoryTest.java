@@ -31,5 +31,13 @@ public class UserRepositoryTest {
 
     }
 
+    @Test
+    public void deleteUser(){
+
+        repository.deleteById(123);
+
+    }
+
+
 
 }

@@ -1,40 +1,63 @@
-package com.product.entity;
+package com.product.entity.dto;
 
-import org.hibernate.annotations.DynamicUpdate;
+import com.product.entity.CustomerProduct;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.Date;
+import java.util.List;
 
-@Entity
-@DynamicUpdate
-public class Customer {
+public class CustomerDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    /**
+     * 客户ID
+     */
     private Integer customerId;
 
+    /**
+     * 客户名称
+     */
     private String customerName;
 
+    /**
+     * 客户编码
+     */
     private String customerCode;
 
+    /**
+     * 联系电话
+     */
     private String phoneNum;
 
+    /**
+     * 客户地址
+     */
     private String address;
 
+    /**
+     * 客户备注
+     */
     private String remark;
 
-    @CreatedDate
+    /**
+     * 创建时间
+     */
     private Date createTime;
 
-    @LastModifiedDate
+    /**
+     * 更新时间
+     */
     private Date updateTime;
 
+    /**
+     * 修改人
+     */
     private Integer operator;
+
+    /**
+     * 客户成品列表
+     */
+    private List<CustomerProduct> customerProducts;
 
     public Integer getCustomerId() {
         return customerId;
@@ -106,5 +129,13 @@ public class Customer {
 
     public void setOperator(Integer operator) {
         this.operator = operator;
+    }
+
+    public List<CustomerProduct> getCustomerProducts() {
+        return customerProducts;
+    }
+
+    public void setCustomerProducts(List<CustomerProduct> customerProducts) {
+        this.customerProducts = customerProducts;
     }
 }
