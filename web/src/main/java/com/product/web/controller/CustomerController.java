@@ -5,6 +5,7 @@ import com.product.entity.Customer;
 import com.product.service.CustomerService;
 import com.product.entity.util.ResultVOUtil;
 import com.product.entity.vo.ResultVO;
+import com.product.web.util.PageResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +45,9 @@ public class CustomerController {
                                                      @RequestParam(value = "size",defaultValue = "10") Integer size){
 
         Page<Customer> customerPage = customerService.findList(customerCode,customerName, PageRequest.of(page-1,size));
-        Map<String,Object> map = new HashMap();
-        map.put("currentPage",page);
-        map.put("size",size);
-        map.put("totalPage",customerPage.getTotalPages());
-        map.put("totalElements",customerPage.getTotalElements());
-        map.put("list",customerPage.getContent());
 
-        return ResultVOUtil.success(map);
+
+        return ResultVOUtil.success(PageResultUtil.toResult(customerPage));
     }
 
 

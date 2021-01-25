@@ -1,12 +1,115 @@
-= 客户列表接口文档
+= API 文档
+
+== 物料列表接口
+
+/material/list
+
+.request
+include::{snippets}/material/list/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/material/list/request-parameters.adoc[]
+
+.response
+include::{snippets}/material/list/http-response.adoc[]
+
+.responseFields
+include::{snippets}/material/list/response-fields.adoc[]
+
+== 插入/更新物料接口
+
+/material/save
+
+.request
+include::{snippets}/material/save/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/material/save/request-parameters.adoc[]
+
+.response
+include::{snippets}/material/save/http-response.adoc[]
+
+.responseFields
+include::{snippets}/material/save/response-fields.adoc[]
+
+== 删除物料接口
+
+/material/delete
+
+.request
+include::{snippets}/material/delete/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/material/delete/request-parameters.adoc[]
+
+.response
+include::{snippets}/material/delete/http-response.adoc[]
+
+.responseFields
+include::{snippets}/material/delete/response-fields.adoc[]
+
+== 产品列表接口
+
+/product/list
+
+.request
+include::{snippets}/product/list/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/product/list/request-parameters.adoc[]
+
+.response
+include::{snippets}/product/list/http-response.adoc[]
+
+.responseFields
+include::{snippets}/product/list/response-fields.adoc[]
+
+== 插入/更新产品接口
+
+/product/save
+
+.request
+include::{snippets}/product/save/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/product/save/request-parameters.adoc[]
+
+.response
+include::{snippets}/product/save/http-response.adoc[]
+
+.responseFields
+include::{snippets}/product/save/response-fields.adoc[]
+
+== 删除产品接口
+
+/product/delete
+
+.request
+include::{snippets}/product/delete/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/product/delete/request-parameters.adoc[]
+
+.response
+include::{snippets}/product/delete/http-response.adoc[]
+
+.responseFields
+include::{snippets}/product/delete/response-fields.adoc[]
+
+== 客户列表接口
 
 /customer/list
 
 .request
-include::{snippets}/customer/http-request.adoc[]
+include::{snippets}/customer/list/http-request.adoc[]
 
 .requestParameter
-include::{snippets}/customer/request-parameters.adoc[]
+include::{snippets}/customer/list/request-parameters.adoc[]
 
 .response
-include::{snippets}/customer/http-response.adoc[]
+include::{snippets}/customer/list/http-response.adoc[]
+
+.responseFields
+include::{snippets}/customer/list/response-fields.adoc[]
+
+

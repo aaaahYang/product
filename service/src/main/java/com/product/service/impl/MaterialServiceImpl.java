@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Optional;
 
 
@@ -32,15 +33,22 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public ResultVO save(Material material) {
 
-        Optional<Material> optionalMaterial = materialRepository.findById(material.getMaterialId());
 
-        if(optionalMaterial.isPresent() &&
-                !optionalMaterial.get().getMaterialCode().equals(material.getMaterialCode())){
-            logger.info("物料编码不允许重复，"+JSONObject.toJSONString(material));
-            return ResultVOUtil.fail(ResultEnum.PARAM_REPEAT,"物料编码");
+        Optional<Material> optionalMaterial = materialRepository.findByMaterialCode(material.getMaterialCode());
+
+        if (optionalMaterial.isPresent()) {
+
+            Material m = optionalMaterial.get();
+
+            if (!m.getMaterialId().equals(material.getMaterialId()) && m.getMaterialCode().equals(material.getMaterialCode())){
+                logger.info("物料编码不允许重复，" + JSONObject.toJSONString(material));
+                return ResultVOUtil.fail(ResultEnum.PARAM_REPEAT, "物料编码");
+            }
+
         }
 
         materialRepository.save(material);
+
 
         return ResultVOUtil.success();
     }
@@ -51,16 +59,16 @@ public class MaterialServiceImpl implements MaterialService {
         Specification specification = new SpecificationUnit(material);
 
 
-        return materialRepository.findAll(specification,pageRequest);
+        return materialRepository.findAll(specification, pageRequest);
     }
 
     @Override
     public ResultVO delete(Integer materialId) {
 
-        try{
+        try {
             materialRepository.deleteById(materialId);
-        }catch (EmptyResultDataAccessException e){
-            logger.info("试图删除不存在的,materialId="+materialId);
+        } catch (EmptyResultDataAccessException e) {
+            logger.info("试图删除不存在的记录,materialId=" + materialId);
             return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
         }
 

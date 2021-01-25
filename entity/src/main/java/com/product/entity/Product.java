@@ -1,36 +1,44 @@
 package com.product.entity;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+
+import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
 @DynamicUpdate
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer productId;
 
+    @NotEmpty(message = "产品名称不允许为空")
     private String productName;
 
+    @NotEmpty(message = "产品编码不允许为空")
     private String productCode;
 
     private  String productDescription;
 
-    private String  unit;
+    private String  unit = "件";
 
+    @PositiveOrZero(message = "默认价格必须大于或等于0")
     private BigDecimal price;
 
+    @NotEmpty
     private String materialCode;
 
+    @NotEmpty
     private String sizeDescription;
 
     @CreatedDate
