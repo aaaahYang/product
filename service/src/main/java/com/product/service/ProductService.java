@@ -25,10 +25,17 @@ public interface ProductService {
     /**
      * 删除客户成品下对应成品
      * 删除产品列表对应产品
-     * @param productId
+     * @param productIds
      * @return
      */
-    ResultVO delete(Integer productId);
+    ResultVO delete(Integer[] productIds);
+
+    /**
+     * 更新客户成品下的成品信息
+     * @param customerIds like 1,2,3
+     * @return
+     */
+    ResultVO updateCustomerProduct(Integer[] customerIds);
 
 
 }

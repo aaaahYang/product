@@ -63,14 +63,18 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public ResultVO delete(Integer materialId) {
+    public ResultVO delete(Integer[] materialIds) {
 
-        try {
-            materialRepository.deleteById(materialId);
-        } catch (EmptyResultDataAccessException e) {
-            logger.info("试图删除不存在的记录,materialId=" + materialId);
-            return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
+        for (Integer i : materialIds){
+            try {
+
+                materialRepository.deleteById(i);
+            } catch (EmptyResultDataAccessException e) {
+                logger.info("试图删除不存在的记录,materialId=" + i);
+                return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
+            }
         }
+
 
 
         return ResultVOUtil.success();

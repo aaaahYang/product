@@ -24,5 +24,7 @@ public interface CustomerProductRepository extends JpaRepository<CustomerProduct
 
     void deleteByCustomerId(Integer customerId);
 
+    void deleteByProductCode(String productCode);
+
 
 }

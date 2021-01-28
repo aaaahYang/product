@@ -46,9 +46,15 @@ public class ProductController {
     }
 
     @RequestMapping("/delete")
-    public ResultVO delete(Integer productId){
-        return productService.delete(productId);
+    public ResultVO delete(Integer[] productIds){
+        return productService.delete(productIds);
     }
 
+
+
+    @PostMapping("/refresh")
+    public ResultVO updateCustomerProduct(Integer[] customerIds){
+        return productService.updateCustomerProduct(customerIds);
+    }
 
 }

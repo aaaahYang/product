@@ -55,8 +55,8 @@ public class MaterialController {
     }
 
     @RequestMapping("/delete")
-    public ResultVO delete(Integer materialId){
-        return materialService.delete(materialId);
+    public ResultVO delete(Integer[] materialIds){
+        return materialService.delete(materialIds);
     }
 
 

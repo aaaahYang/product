@@ -24,8 +24,8 @@ public interface MaterialService {
 
     /**
      * 删除
-     * @param materialId
+     * @param materialIds
      * @return
      */
-    ResultVO delete(Integer materialId);
+    ResultVO delete(Integer[] materialIds);
 }

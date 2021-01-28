@@ -1,9 +1,11 @@
 package com.product.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.product.dao.repository.CustomerProductRepository;
 import com.product.dao.repository.MaterialRepository;
 import com.product.dao.repository.ProductRepository;
 import com.product.dao.repository.unit.SpecificationUnit;
+import com.product.entity.CustomerProduct;
 import com.product.entity.Material;
 import com.product.entity.Product;
 import com.product.entity.enums.ResultEnum;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +33,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private MaterialRepository materialRepository;
+
+    @Autowired
+    private CustomerProductRepository customerProductRepository;
 
     @Override
     public Page<Product> findList(Product product, PageRequest pageRequest) {
@@ -66,23 +72,41 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * 1.删除客户成品列表 todo
+     * 1.删除客户成品列表
      * 2.删除产品列表
-     * @param productId
+     * @param productIds
      * @return
      */
     @Override
-    public ResultVO delete(Integer productId) {
+    public ResultVO delete(Integer[] productIds) {
 
-        try {
-            productRepository.deleteById(productId);
-        } catch (EmptyResultDataAccessException e) {
-            log.info("试图删除不存在的记录,productId=" + productId);
-            return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
+        for(Integer i : productIds){
+            Optional<Product> optionalProduct = productRepository.findById(i);
+            if(optionalProduct.isPresent()){
+                customerProductRepository.deleteByProductCode(optionalProduct.get().getProductCode());
+                productRepository.deleteById(i);
+            }
         }
-
 
         return ResultVOUtil.success();
 
+    }
+
+    @Override
+    public ResultVO updateCustomerProduct(Integer[] customerIds) {
+        for (Integer i : customerIds){
+
+            List<CustomerProduct> list = customerProductRepository.findByCustomerId(i);
+            for (CustomerProduct customerProduct : list){
+                String productCode = customerProduct.getProductCode();
+                Optional<Product> optionalProduct = productRepository.findByProductCode(productCode);
+                if(!optionalProduct.isPresent()){
+                    return ResultVOUtil.fail(ResultEnum.UPDATE_CUSTOMER_PRODUCT_ERROR,productCode);
+                }
+                Product product = optionalProduct.get();
+                customerProduct.setPrice(product.getPrice());
+            }
+        }
+        return ResultVOUtil.success();
     }
 }
