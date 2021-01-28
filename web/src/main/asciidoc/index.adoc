@@ -112,4 +112,66 @@ include::{snippets}/customer/list/http-response.adoc[]
 .responseFields
 include::{snippets}/customer/list/response-fields.adoc[]
 
+== 查询单个客户接口
 
+/customer/find/{customerId}
+
+.request
+include::{snippets}/customer/find/one/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/customer/find/one/path-parameters.adoc[]
+
+.response
+include::{snippets}/customer/find/one/http-response.adoc[]
+
+.responseFields
+include::{snippets}/customer/find/one/response-fields.adoc[]
+
+== 保存客户接口
+
+/customer/save
+
+.request
+include::{snippets}/customer/save/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/customer/save/request-fields.adoc[]
+
+.response
+include::{snippets}/customer/save/http-response.adoc[]
+
+.responseFields
+include::{snippets}/customer/save/response-fields.adoc[]
+
+== 删除客户接口
+
+/customer/delete
+
+.request
+include::{snippets}/customer/delete/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/customer/delete/request-parameters.adoc[]
+
+.response
+include::{snippets}/customer/delete/http-response.adoc[]
+
+.responseFields
+include::{snippets}/customer/delete/response-fields.adoc[]
+
+== 删除客户成品接口
+
+/customer/deleteLine
+
+.request
+include::{snippets}/customer/deleteLine/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/customer/deleteLine/request-parameters.adoc[]
+
+.response
+include::{snippets}/customer/deleteLine/http-response.adoc[]
+
+.responseFields
+include::{snippets}/customer/deleteLine/response-fields.adoc[]

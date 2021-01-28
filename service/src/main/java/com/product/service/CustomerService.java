@@ -1,10 +1,14 @@
 package com.product.service;
 
 import com.product.entity.Customer;
+import com.product.entity.CustomerProduct;
 import com.product.entity.dto.CustomerDTO;
+import com.product.entity.vo.ResultVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 public interface CustomerService {
@@ -21,21 +25,24 @@ public interface CustomerService {
      * @param customerId
      * @return
      */
-    CustomerDTO findOne(Integer customerId);
+    ResultVO<CustomerDTO> findOne(Integer customerId);
 
     /**
      * 创建/保存 客户
-     * @param customerDTO
+     * @param customer
+     * @param customerProducts
      * @return
      */
-    CustomerDTO save(CustomerDTO customerDTO);
+    ResultVO save(Customer customer, List<CustomerProduct> customerProducts);
 
     /**
-     * 删除 客户
-     * @param customerDTO
+     * 删除 客户 可批量
+     * @param customerIds
      * @return
      */
-    CustomerDTO delete(CustomerDTO customerDTO);
+    ResultVO delete(Integer[] customerIds);
+
+    ResultVO deleteCustomerProduct(Integer[] productLineIds);
 
 
 

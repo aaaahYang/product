@@ -1,8 +1,6 @@
 package com.product.entity.dto;
 
 import com.product.entity.CustomerProduct;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
 import java.util.List;
@@ -57,7 +55,8 @@ public class CustomerDTO {
     /**
      * 客户成品列表
      */
-    private List<CustomerProduct> customerProducts;
+    private List<CustomerProductDTO> customerProductDTOS;
+
 
     public Integer getCustomerId() {
         return customerId;
@@ -131,11 +130,11 @@ public class CustomerDTO {
         this.operator = operator;
     }
 
-    public List<CustomerProduct> getCustomerProducts() {
-        return customerProducts;
+    public List<CustomerProductDTO> getCustomerProductDTOS() {
+        return customerProductDTOS;
     }
 
-    public void setCustomerProducts(List<CustomerProduct> customerProducts) {
-        this.customerProducts = customerProducts;
+    public void setCustomerProductDTOS(List<CustomerProductDTO> customerProductDTOS) {
+        this.customerProductDTOS = customerProductDTOS;
     }
 }

@@ -46,7 +46,7 @@ public class MaterialController {
 
 
     @PostMapping("/save")
-    public ResultVO save(@Valid @RequestBody Material material, BindingResult bindingResult){
+    public ResultVO save(@Valid  Material material, BindingResult bindingResult){
 
         if(bindingResult.hasErrors()){
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,bindingResult.getFieldError().getDefaultMessage());

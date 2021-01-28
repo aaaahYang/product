@@ -38,7 +38,7 @@ public class ProductController {
     }
 
     @PostMapping("/save")
-    public ResultVO save(@Valid @RequestBody Product product, BindingResult bindingResult){
+    public ResultVO save(@Valid Product product, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,bindingResult.getFieldError().getDefaultMessage());
         }

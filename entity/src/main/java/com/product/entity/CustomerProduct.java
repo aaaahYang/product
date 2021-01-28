@@ -6,6 +6,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -17,9 +21,14 @@ public class CustomerProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer productLineId;
 
+    @NotNull(message = "客户ID不能为空")
     private Integer customerId;
 
+    @NotEmpty(message = "成品编码不能为空")
     private String productCode;
+
+    @PositiveOrZero(message = "默认价格必须大于0")
+    private BigDecimal price;
 
     private String remark;
 
@@ -30,6 +39,14 @@ public class CustomerProduct {
     private Date updateTime;
 
     private Integer operator;
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 
     public Integer getProductLineId() {
         return productLineId;
