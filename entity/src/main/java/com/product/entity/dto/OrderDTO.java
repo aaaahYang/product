@@ -1,37 +1,25 @@
-package com.product.entity;
+package com.product.entity.dto;
 
-import org.hibernate.annotations.DynamicUpdate;
+import com.product.entity.OrderLine;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
-@Entity
-@DynamicUpdate
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "order_header")
-public class Order {
+public class OrderDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
 
-    @NotEmpty
     private String orderType;
 
     private String orderNum;
 
-    private String status = "A";
+    private String status;
 
-    @NotEmpty
     private String customerCode;
 
-    @NotEmpty
     private String customerName;
 
     private String deliveryAddress;
@@ -48,13 +36,13 @@ public class Order {
 
     private Date finishTime;
 
-    @CreatedDate
     private Date createTime;
 
-    @LastModifiedDate
     private Date updateTime;
 
     private Integer operator;
+
+    private List<OrderLine> orderLines;
 
     public Integer getOrderId() {
         return orderId;
@@ -182,5 +170,13 @@ public class Order {
 
     public void setOperator(Integer operator) {
         this.operator = operator;
+    }
+
+    public List<OrderLine> getOrderLines() {
+        return orderLines;
+    }
+
+    public void setOrderLines(List<OrderLine> orderLines) {
+        this.orderLines = orderLines;
     }
 }

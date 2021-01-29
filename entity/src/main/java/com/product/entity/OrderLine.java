@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -22,16 +23,20 @@ public class OrderLine {
 
     private Short rowNum;
 
+    @NotEmpty
     private String productCode;
 
+    @NotEmpty
     private String productName;
 
     private String unit;
 
+    @NotEmpty
     private Integer quantity;
 
     private Integer actualQuantity;
 
+    @NotEmpty
     private BigDecimal defaultPrice;
 
     private BigDecimal finishPrice;

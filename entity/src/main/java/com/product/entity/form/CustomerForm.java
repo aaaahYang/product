@@ -9,7 +9,7 @@ import java.util.List;
 public class CustomerForm extends Customer {
 
 
-    List<CustomerProduct> customerProducts;
+    private List<CustomerProduct> customerProducts;
 
     public List<CustomerProduct> getCustomerProducts() {
         return customerProducts;
