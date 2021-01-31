@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class ProductController {
                                                  @RequestParam(value = "size",defaultValue = "10") Integer size){
         Product product = JSON.parseObject(param,Product.class);
         if(product == null) product = new Product();
-        return ResultVOUtil.success(PageResultUtil.toResult(productService.findList(product, PageRequest.of(page-1,size))));
+        return ResultVOUtil.success(PageResultUtil.toResult(productService.findList(product, PageRequest.of(page-1,size, Sort.Direction.DESC,"productId"))));
 
     }
 

@@ -31,6 +31,7 @@ public class CheckAccount {
     private String status;
 
     @CreatedDate
+    @Column(updatable = false)
     private Date createTime;
 
     @LastModifiedDate

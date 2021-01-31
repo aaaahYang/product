@@ -33,6 +33,7 @@ public class CustomerProduct {
     private String remark;
 
     @CreatedDate
+    @Column(updatable = false)
     private Date createTime;
 
     @LastModifiedDate

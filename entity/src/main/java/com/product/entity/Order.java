@@ -26,7 +26,7 @@ public class Order {
 
     private String orderNum;
 
-    private String status = "A";
+    private String status = "制单";
 
     @NotEmpty
     private String customerCode;
@@ -44,11 +44,10 @@ public class Order {
 
     private String phoneNum;
 
-    private Date confirmTime;
-
     private Date finishTime;
 
     @CreatedDate
+    @Column(updatable = false)
     private Date createTime;
 
     @LastModifiedDate
@@ -142,14 +141,6 @@ public class Order {
 
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
-    }
-
-    public Date getConfirmTime() {
-        return confirmTime;
-    }
-
-    public void setConfirmTime(Date confirmTime) {
-        this.confirmTime = confirmTime;
     }
 
     public Date getFinishTime() {

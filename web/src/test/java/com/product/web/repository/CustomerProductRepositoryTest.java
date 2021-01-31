@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -20,5 +21,10 @@ public class CustomerProductRepositoryTest {
     public void test1(){
         List<CustomerProductDTO> customerProductDTOS = customerProductRepository.findWithProductByCustomerId(1);
         System.out.println(customerProductDTOS.get(0).getCustomerId());
+    }
+
+    @Test
+    public void test2(){
+        System.out.println(new Date());
     }
 }

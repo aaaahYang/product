@@ -59,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
 
             Product m = optionalProduct.get();
 
-            if (!m.getProductId().equals(product.getProductId()) && m.getMaterialCode().equals(product.getMaterialCode())){
+            if (!m.getProductId().equals(product.getProductId()) && m.getProductCode().equals(product.getProductCode())){
                 log.info("产品编码不允许重复，" + JSONObject.toJSONString(product));
                 return ResultVOUtil.fail(ResultEnum.PARAM_REPEAT, "产品编码");
             }

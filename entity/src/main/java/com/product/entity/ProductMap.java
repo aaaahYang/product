@@ -30,6 +30,7 @@ public class ProductMap {
     private String attribute3;
 
     @CreatedDate
+    @Column(updatable = false)
     private Date createTime;
 
     @LastModifiedDate

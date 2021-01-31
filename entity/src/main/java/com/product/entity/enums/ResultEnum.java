@@ -7,7 +7,8 @@ public enum ResultEnum {
     PARAM_REPEAT(101,"字段值不允许重复："),
     NOT_FIND_RECODE(102,"没找到记录"),
     NOT_EMPTY(103,"参数不能为空"),
-    UPDATE_CUSTOMER_PRODUCT_ERROR(104,"更新客户成品列表出错，产品编号：")
+    UPDATE_CUSTOMER_PRODUCT_ERROR(104,"更新客户成品列表出错，产品编号："),
+    VALID_ORDER_ERROR(105,"只能操作“制单”状态的订单"),
 
 
     ;

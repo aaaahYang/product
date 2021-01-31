@@ -21,8 +21,6 @@ public class OrderLine {
 
     private Integer orderId;
 
-    private Short rowNum;
-
     @NotEmpty
     private String productCode;
 
@@ -44,6 +42,7 @@ public class OrderLine {
     private Integer remark;
 
     @CreatedDate
+    @Column(updatable = false)
     private Date createTime;
 
     @LastModifiedDate
@@ -65,14 +64,6 @@ public class OrderLine {
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
-    }
-
-    public Short getRowNum() {
-        return rowNum;
-    }
-
-    public void setRowNum(Short rowNum) {
-        this.rowNum = rowNum;
     }
 
     public String getProductCode() {

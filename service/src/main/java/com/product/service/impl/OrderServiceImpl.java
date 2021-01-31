@@ -19,8 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderLineRepository orderLineRepository;
+
+    private static final HashMap<String,String> ORDER_TYPE_MAP = new HashMap();
+
+    static {
+        ORDER_TYPE_MAP.put("退货单","TH");
+        ORDER_TYPE_MAP.put("送货单","TH");
+    }
+
 
     @Override
     public Page<Order> findList(Order order, PageRequest pageRequest) {
@@ -53,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDTO orderDTO = new OrderDTO();
         BeanUtils.copyProperties(orderOptional.get(),orderDTO);
 
-        List<OrderLine> orderLines = orderLineRepository.findByOrderId(orderId);
+        List<OrderLine> orderLines = orderLineRepository.findByOrderIdOrderByRowNum(orderId);
         orderDTO.setOrderLines(orderLines);
 
 
@@ -69,44 +79,105 @@ public class OrderServiceImpl implements OrderService {
         if(!validInt(orderId) && validStr(orderNum) || validInt(orderId) && !validStr(orderNum)){
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"保存时订单ID和订单编号不能为空");
         }
-
+        BigDecimal sumPrice = new BigDecimal(0);
         if (!orderLines.isEmpty()){
+
             for (OrderLine orderLine : orderLines){
+                if(orderId != orderLine.getOrderId()){
+                    return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"订单ID与明细不匹配");
+                }
+                sumPrice = sumPrice.add(orderLine.getFinishPrice());
                 orderLineRepository.save(orderLine);
             }
         }
+        if(!validStr(orderNum)){
+
+            orderNum = orderNumGenerator(ORDER_TYPE_MAP.get(order.getOrderType()));
+            order.setOrderNum(orderNum);
+        }
+        order.setSumPrice(sumPrice);
 
         orderRepository.save(order);
 
-
-
-        return null;
+        return ResultVOUtil.success();
     }
 
     @Override
     @Transactional
     public ResultVO delete(Integer orderId) {
-        return null;
+        ResultEnum resultEnum = validOrderStatusA(orderId);
+
+        if(!resultEnum.equals(ResultEnum.SUCCESS)){
+            return ResultVOUtil.fail(resultEnum);
+        }
+
+        orderRepository.deleteById(orderId);
+
+
+        return ResultVOUtil.success();
     }
 
     @Override
+    @Transactional
     public ResultVO deleteLine(Integer[] lineIds) {
-        return null;
+
+        for (Integer i : lineIds){
+
+            Optional<OrderLine> optionalOrderLine = orderLineRepository.findById(i);
+            if(optionalOrderLine.isPresent()){
+                OrderLine orderLine = optionalOrderLine.get();
+                ResultEnum resultEnum = validOrderStatusA(orderLine.getOrderId());
+
+                if(!resultEnum.equals(ResultEnum.SUCCESS)){
+                    return ResultVOUtil.fail(resultEnum);
+                }
+                orderLineRepository.deleteById(i);
+            }
+        }
+        return ResultVOUtil.success();
     }
 
-    @Override
-    public ResultVO cancel(Integer orderId) {
-        return null;
-    }
-
-    @Override
-    public ResultVO confirm(Integer orderId) {
-        return null;
-    }
 
     @Override
     public ResultVO finish(Order order, List<OrderLine> orderLines) {
-        return null;
+        ResultEnum resultEnum = validOrderStatusA(order.getOrderId());
+
+        if(!resultEnum.equals(ResultEnum.SUCCESS)){
+            return ResultVOUtil.fail(resultEnum);
+        }
+
+        for (OrderLine orderLine : orderLines){
+            if (orderLine.getActualQuantity() == null || orderLine.getActualQuantity().compareTo(0)< 0){
+                return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际数量不能为空");
+            }
+
+            if (orderLine.getFinishPrice() == null || orderLine.getFinishPrice().compareTo(new BigDecimal(0.0)) < 0){
+                return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际价格不能为空");
+            }
+
+        }
+        order.setFinishTime(new Date());
+        order.setStatus("完结");
+
+        return save(order,orderLines);
+    }
+
+
+    /**
+     * 校验订单是否为 “制单” 状态
+     * @param orderId
+     * @return
+     */
+    private ResultEnum validOrderStatusA(Integer orderId){
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if(!orderOptional.isPresent()){
+            return ResultEnum.NOT_FIND_RECODE;
+        }
+        Order order = orderOptional.get();
+        if (!order.getStatus().equals("制单")){
+            return ResultEnum.VALID_ORDER_ERROR;
+        }
+        return ResultEnum.SUCCESS;
     }
 
     /**

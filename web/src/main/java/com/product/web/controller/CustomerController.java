@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class CustomerController {
                                                      @RequestParam(value = "page",defaultValue = "1") Integer page,
                                                      @RequestParam(value = "size",defaultValue = "10") Integer size){
 
-        Page<Customer> customerPage = customerService.findList(customerCode,customerName, PageRequest.of(page-1,size));
+        Page<Customer> customerPage = customerService.findList(customerCode,customerName, PageRequest.of(page-1,size, Sort.Direction.DESC,"customerId"));
 
 
         return ResultVOUtil.success(PageResultUtil.toResult(customerPage));

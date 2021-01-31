@@ -47,19 +47,6 @@ public interface OrderService {
      */
     ResultVO deleteLine(Integer[] lineIds);
 
-    /**
-     * 取消确认状态
-     * @param orderId
-     * @return
-     */
-    ResultVO cancel(Integer orderId);
-
-    /**
-     * 确认订单
-     * @param orderId
-     * @return
-     */
-    ResultVO confirm(Integer orderId);
 
     /**
      * 完结订单

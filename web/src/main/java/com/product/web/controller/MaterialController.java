@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,7 @@ public class MaterialController {
         Material material = JSON.parseObject(param,Material.class);
         if (material ==null) material = new Material();
 
-        return ResultVOUtil.success(PageResultUtil.toResult(materialService.findList(material, PageRequest.of(page-1,size))));
+        return ResultVOUtil.success(PageResultUtil.toResult(materialService.findList(material, PageRequest.of(page-1,size, Sort.Direction.DESC,"materialId"))));
     }
 
 

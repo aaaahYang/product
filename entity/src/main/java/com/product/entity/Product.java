@@ -35,13 +35,14 @@ public class Product {
     @PositiveOrZero(message = "默认价格必须大于或等于0")
     private BigDecimal price;
 
-    @NotEmpty
+    @NotEmpty(message = "物料编码不能为空")
     private String materialCode;
 
-    @NotEmpty
+    @NotEmpty(message = "开料尺寸不能为空")
     private String sizeDescription;
 
     @CreatedDate
+    @Column(updatable = false)
     private Date createTime;
 
     @LastModifiedDate

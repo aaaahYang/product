@@ -25,6 +25,7 @@ public class User {
     private String userPwd;
 
     @CreatedDate
+    @Column(updatable = false)
     private Date createTime;
 
     @LastModifiedDate
