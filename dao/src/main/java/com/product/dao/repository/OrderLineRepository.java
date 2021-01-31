@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface OrderLineRepository extends JpaRepository<OrderLine,Integer> {
 
-    List<OrderLine> findByOrderIdOrderByRowNum(Integer orderId);
+    List<OrderLine> findByOrderIdOrderByOrderLineId(Integer orderId);
 
     Integer countByOrderId(Integer orderId);
 }

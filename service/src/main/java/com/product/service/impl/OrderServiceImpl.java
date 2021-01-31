@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDTO orderDTO = new OrderDTO();
         BeanUtils.copyProperties(orderOptional.get(),orderDTO);
 
-        List<OrderLine> orderLines = orderLineRepository.findByOrderIdOrderByRowNum(orderId);
+        List<OrderLine> orderLines = orderLineRepository.findByOrderIdOrderByOrderLineId(orderId);
         orderDTO.setOrderLines(orderLines);
 
 
