@@ -1,5 +1,6 @@
 package com.product.entity;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,17 +22,18 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
 
-    @NotEmpty
+    @NotEmpty(message = "订单类型不能为空")
     private String orderType;
 
     private String orderNum;
 
-    private String status = "制单";
+    @ColumnDefault("制单")
+    private String status;
 
-    @NotEmpty
+    @NotEmpty(message = "客户编码不能为空")
     private String customerCode;
 
-    @NotEmpty
+    @NotEmpty(message = "客户名称不能为空")
     private String customerName;
 
     private String deliveryAddress;

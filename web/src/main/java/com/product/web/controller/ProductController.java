@@ -43,6 +43,8 @@ public class ProductController {
         if (bindingResult.hasErrors()){
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,bindingResult.getFieldError().getDefaultMessage());
         }
+
+
         return productService.save(product);
     }
 

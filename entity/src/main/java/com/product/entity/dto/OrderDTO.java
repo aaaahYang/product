@@ -32,8 +32,6 @@ public class OrderDTO {
 
     private String phoneNum;
 
-    private Date confirmTime;
-
     private Date finishTime;
 
     private Date createTime;
@@ -130,14 +128,6 @@ public class OrderDTO {
 
     public void setPhoneNum(String phoneNum) {
         this.phoneNum = phoneNum;
-    }
-
-    public Date getConfirmTime() {
-        return confirmTime;
-    }
-
-    public void setConfirmTime(Date confirmTime) {
-        this.confirmTime = confirmTime;
     }
 
     public Date getFinishTime() {

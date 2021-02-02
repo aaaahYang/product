@@ -76,7 +76,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public ResultVO save(Customer customer, List<CustomerProduct> customerProducts) {
 
-        if (!customerProducts.isEmpty()){
+        if (customerProducts != null && !customerProducts.isEmpty()){
 
             for (CustomerProduct customerProduct:customerProducts){
                 if (!customerRepository.existsById(customerProduct.getCustomerId())){

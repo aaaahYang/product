@@ -41,14 +41,14 @@ public class OrderServiceImpl implements OrderService {
 
     static {
         ORDER_TYPE_MAP.put("退货单","TH");
-        ORDER_TYPE_MAP.put("送货单","TH");
+        ORDER_TYPE_MAP.put("送货单","SH");
     }
 
 
     @Override
     public Page<Order> findList(Order order, PageRequest pageRequest) {
 
-        SpecificationUnit specification = new SpecificationUnit(order);
+        SpecificationUnit<Order> specification = new SpecificationUnit<>(order);
 
         return orderRepository.findAll(specification,pageRequest);
     }
@@ -80,13 +80,14 @@ public class OrderServiceImpl implements OrderService {
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"保存时订单ID和订单编号不能为空");
         }
         BigDecimal sumPrice = new BigDecimal(0);
-        if (!orderLines.isEmpty()){
+        if (orderLines != null && !orderLines.isEmpty()){
 
             for (OrderLine orderLine : orderLines){
-                if(orderId != orderLine.getOrderId()){
+                if(!orderId.equals(orderLine.getOrderId())){
                     return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"订单ID与明细不匹配");
                 }
-                sumPrice = sumPrice.add(orderLine.getFinishPrice());
+                if (orderLine.getFinishPrice() != null )
+                    sumPrice = sumPrice.add(orderLine.getFinishPrice());
                 orderLineRepository.save(orderLine);
             }
         }
@@ -150,9 +151,12 @@ public class OrderServiceImpl implements OrderService {
             if (orderLine.getActualQuantity() == null || orderLine.getActualQuantity().compareTo(0)< 0){
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际数量不能为空");
             }
+            if (orderLine.getActualQuantity().compareTo(orderLine.getQuantity()) > 0){
+                return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际数量不能多于订单数量");
+            }
 
-            if (orderLine.getFinishPrice() == null || orderLine.getFinishPrice().compareTo(new BigDecimal(0.0)) < 0){
-                return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际价格不能为空");
+            if (orderLine.getFinishPrice() == null || orderLine.getFinishPrice().compareTo(new BigDecimal("0.0")) < 0){
+                return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"最终价格不能为空");
             }
 
         }
@@ -174,7 +178,7 @@ public class OrderServiceImpl implements OrderService {
             return ResultEnum.NOT_FIND_RECODE;
         }
         Order order = orderOptional.get();
-        if (!order.getStatus().equals("制单")){
+        if (order.getStatus() == null || !order.getStatus().equals("制单")){
             return ResultEnum.VALID_ORDER_ERROR;
         }
         return ResultEnum.SUCCESS;
@@ -191,14 +195,14 @@ public class OrderServiceImpl implements OrderService {
 
         stringBuilder.append(prefix);
         stringBuilder.append(getDate());
-        String sequence ;
+        Integer sequence ;
         Optional<Order> orderOptional = orderRepository.findFirstByOrderNumStartingWithOrderByOrderNumDesc(stringBuilder.toString());
         if(orderOptional.isPresent()){
            Order order = orderOptional.get();
            String orderNum = order.getOrderNum();
-           sequence = (new Integer(orderNum.substring(0,stringBuilder.length()))).toString();
+           sequence = new Integer(orderNum.substring(stringBuilder.length()))+1;
         }else{
-            sequence = "1";
+            sequence = 1;
         }
 
         return stringBuilder.append(addZero(sequence,4)).toString();
@@ -211,9 +215,10 @@ public class OrderServiceImpl implements OrderService {
      * @param len 总长度
      * @return
      */
-    private String addZero(String seq,int len){
+    private String addZero(Integer seq,int len){
+        String s = seq +"";
         StringBuilder stringBuilder = new StringBuilder();
-        for(int i = 0 ; i<len-seq.length() ; i++){
+        for(int i = 0 ; i<len-s.length() ; i++){
             stringBuilder.append("0");
         }
         return stringBuilder.append(seq).toString();

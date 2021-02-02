@@ -18,10 +18,10 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer customerId;
 
-    @NotEmpty
+    @NotEmpty(message = "客户名称不能为空")
     private String customerName;
 
-    @NotEmpty
+    @NotEmpty(message = "客户编码不能为空")
     private String customerCode;
 
     private String phoneNum;

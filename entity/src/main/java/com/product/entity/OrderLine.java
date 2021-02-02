@@ -1,5 +1,6 @@
 package com.product.entity;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -7,6 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -17,24 +20,26 @@ public class OrderLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer OrderLineId;
+    private Integer orderLineId;
 
+    @NotNull(message = "订单ID不能为空")
     private Integer orderId;
 
-    @NotEmpty
+    @NotEmpty(message = "产品编码不能为空")
     private String productCode;
 
-    @NotEmpty
+    @NotEmpty(message = "产品名称不能为空")
     private String productName;
 
+    @Column(columnDefinition = "varchar(50) default '件'")
     private String unit;
 
-    @NotEmpty
+    @PositiveOrZero(message = "默认数量必须大于或等于0")
     private Integer quantity;
 
     private Integer actualQuantity;
 
-    @NotEmpty
+    @PositiveOrZero(message = "默认价格必须大于或等于0")
     private BigDecimal defaultPrice;
 
     private BigDecimal finishPrice;
@@ -51,11 +56,11 @@ public class OrderLine {
     private Integer operator;
 
     public Integer getOrderLineId() {
-        return OrderLineId;
+        return orderLineId;
     }
 
     public void setOrderLineId(Integer orderLineId) {
-        OrderLineId = orderLineId;
+        this.orderLineId = orderLineId;
     }
 
     public Integer getOrderId() {
@@ -83,6 +88,7 @@ public class OrderLine {
     }
 
     public String getUnit() {
+
         return unit;
     }
 

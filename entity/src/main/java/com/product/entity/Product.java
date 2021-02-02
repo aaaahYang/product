@@ -1,5 +1,6 @@
 package com.product.entity;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,7 +31,8 @@ public class Product {
 
     private  String productDescription;
 
-    private String  unit = "件";
+    @Column(insertable = false,columnDefinition = "varchar(50) default '件'")
+    private String  unit;
 
     @PositiveOrZero(message = "默认价格必须大于或等于0")
     private BigDecimal price;

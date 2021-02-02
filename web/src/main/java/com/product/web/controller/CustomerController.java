@@ -72,7 +72,7 @@ public class CustomerController {
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,bindingResult.getFieldError().getDefaultMessage());
         }
         List<CustomerProduct> customerProducts = customerForm.getCustomerProducts();
-        if (!customerProducts.isEmpty()){
+        if (customerProducts != null && !customerProducts.isEmpty()){
             for (CustomerProduct customerProduct : customerProducts){
                 Set<ConstraintViolation<CustomerProduct>> constraintViolations = validator.validate(customerProduct);
                 for (ConstraintViolation constraintViolation : constraintViolations){
