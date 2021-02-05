@@ -21,7 +21,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -89,9 +91,11 @@ public class CustomerServiceImpl implements CustomerService {
                 customerProductRepository.save(customerProduct);
             }
         }
-        customerRepository.save(customer);
+        customer = customerRepository.save(customer);
 
-        return ResultVOUtil.success();
+        Map<String,Object> map  = new HashMap<>();
+        map.put("customerId",customer.getCustomerId());
+        return ResultVOUtil.success(map);
     }
 
     @Override

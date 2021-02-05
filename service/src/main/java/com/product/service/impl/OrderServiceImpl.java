@@ -10,6 +10,7 @@ import com.product.entity.enums.ResultEnum;
 import com.product.entity.util.ResultVOUtil;
 import com.product.entity.vo.ResultVO;
 import com.product.service.OrderService;
+import com.product.service.unit.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,10 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -98,9 +96,11 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setSumPrice(sumPrice);
 
-        orderRepository.save(order);
+        order = orderRepository.save(order);
 
-        return ResultVOUtil.success();
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderId",order.getOrderId());
+        return ResultVOUtil.success(map);
     }
 
     @Override
@@ -145,6 +145,9 @@ public class OrderServiceImpl implements OrderService {
 
         if(!resultEnum.equals(ResultEnum.SUCCESS)){
             return ResultVOUtil.fail(resultEnum);
+        }
+        if(orderLines.size() <= 0){
+            return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"没找到行记录");
         }
 
         for (OrderLine orderLine : orderLines){
@@ -205,24 +208,9 @@ public class OrderServiceImpl implements OrderService {
             sequence = 1;
         }
 
-        return stringBuilder.append(addZero(sequence,4)).toString();
+        return stringBuilder.append(CommonUtil.addZero(sequence,4)).toString();
     }
 
-
-    /**
-     * 前面补零
-     * @param seq 序列
-     * @param len 总长度
-     * @return
-     */
-    private String addZero(Integer seq,int len){
-        String s = seq +"";
-        StringBuilder stringBuilder = new StringBuilder();
-        for(int i = 0 ; i<len-s.length() ; i++){
-            stringBuilder.append("0");
-        }
-        return stringBuilder.append(seq).toString();
-    }
 
     /**
      * 获取时间

@@ -21,7 +21,7 @@ public class CheckAccountLine {
 
     private  String orderCode;
 
-    private Short rowNum;
+    private Integer rowNum;
 
     private String unit;
 
@@ -65,11 +65,11 @@ public class CheckAccountLine {
         this.orderCode = orderCode;
     }
 
-    public Short getRowNum() {
+    public Integer getRowNum() {
         return rowNum;
     }
 
-    public void setRowNum(Short rowNum) {
+    public void setRowNum(Integer rowNum) {
         this.rowNum = rowNum;
     }
 
