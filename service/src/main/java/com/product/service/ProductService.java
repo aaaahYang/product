@@ -32,10 +32,10 @@ public interface ProductService {
 
     /**
      * 更新客户成品下的成品信息
-     * @param customerIds like 1,2,3
+     * @param customerId
      * @return
      */
-    ResultVO updateCustomerProduct(Integer[] customerIds);
+    ResultVO updateCustomerProduct(Integer customerId);
 
 
 }

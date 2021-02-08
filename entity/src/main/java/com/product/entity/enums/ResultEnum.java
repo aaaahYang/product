@@ -8,9 +8,9 @@ public enum ResultEnum {
     NOT_FIND_RECODE(102,"没找到记录"),
     NOT_EMPTY(103,"参数不能为空"),
     UPDATE_CUSTOMER_PRODUCT_ERROR(104,"更新客户成品列表出错，产品编号："),
-    VALID_ORDER_ERROR(105,"只能操作“制单”状态的订单"),
-    ERROR_REQUEST(106,"错误的请求方式");
-
+    VALID_ORDER_ERROR(105,"只能操作“制单”状态的单据"),
+    ERROR_REQUEST(106,"错误的请求方式"),
+    BILL_PUBLISH_ERROR(107,"对账单没有对应的明细行，不能发布"),
 
     ;
 

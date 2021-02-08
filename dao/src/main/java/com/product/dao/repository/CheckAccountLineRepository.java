@@ -15,5 +15,9 @@ public interface CheckAccountLineRepository extends JpaRepository<CheckAccountLi
 
     List<CheckAccountLine> findByCheckIdOrderByRowNumAsc(Integer checkId);
 
+    Integer countByCheckId(Integer checkId);
+
+    void deleteByCheckId(Integer checkId);
+
 
 }

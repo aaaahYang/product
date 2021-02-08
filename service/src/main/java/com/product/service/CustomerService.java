@@ -2,7 +2,9 @@ package com.product.service;
 
 import com.product.entity.Customer;
 import com.product.entity.CustomerProduct;
+import com.product.entity.Product;
 import com.product.entity.dto.CustomerDTO;
+import com.product.entity.dto.CustomerProductDTO;
 import com.product.entity.vo.ResultVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,10 +46,13 @@ public interface CustomerService {
 
     ResultVO deleteCustomerProduct(Integer[] productLineIds);
 
-
-
-
-
+    /**
+     * 根据customerId 获取 客户成品列表 ,提供 customerCode ,customerName 过滤
+     * @param customerId
+     * @param product
+     * @return
+     */
+    List<CustomerProductDTO> findProductList(Integer customerId, Product product);
 
 
 }

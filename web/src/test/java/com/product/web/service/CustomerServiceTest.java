@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.product.entity.Customer;
 import com.product.entity.CustomerProduct;
+import com.product.entity.Product;
 import com.product.entity.dto.CustomerDTO;
 import com.product.entity.dto.CustomerProductDTO;
 import com.product.entity.form.CustomerForm;
@@ -103,7 +104,16 @@ public class CustomerServiceTest {
             System.out.println(e.getMessage());
         }
 
-
     }
+
+    @Test
+    void findProductList(){
+
+        Product product  = new Product();
+        product.setProductCode("1231124");
+        List list  = customerService.findProductList(5,product);
+        System.out.println(list);
+    }
+
 
 }

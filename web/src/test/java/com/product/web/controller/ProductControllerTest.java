@@ -10,6 +10,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -99,4 +102,38 @@ class ProductControllerTest extends RestDocsControllerTest {
                 ));
         
     }
+
+    @Test
+    void updateCustomerProduct() throws Exception{
+        this.mockMvc.perform(post("/product/refresh").param("customerId","27"))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcRestDocumentation.document("product/refresh",
+                        requestParameters(parameterWithName("customerId").description("传入客户ID")),
+                        responseFields(fieldWithPath("code").description("返回状态码，0表示成功").type(JsonFieldType.NUMBER).optional(),
+                                fieldWithPath("msg").description("返回信息").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data").description("返回数据").type(JsonFieldType.NULL).optional())
+                ));
+    }
+
+    @Test
+    void getFirstDate(){
+        int year = 2021;
+        int month = 2;
+        Calendar cal = Calendar.getInstance();
+        //设置年份
+        cal.set(Calendar.YEAR, year);
+        //设置月份
+        cal.set(Calendar.MONTH, month-1);
+        //获取某月最小天数
+        int firstDay = cal.getActualMaximum(Calendar.DATE);
+        //设置日历中月份的最小天数
+        cal.set(Calendar.DAY_OF_MONTH,firstDay);
+        //格式化日期
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        String date = sdf.format(cal.getTime());
+        System.out.println(date);
+    }
+
 }

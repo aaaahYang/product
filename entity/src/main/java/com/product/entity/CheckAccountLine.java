@@ -25,6 +25,8 @@ public class CheckAccountLine {
 
     private String unit;
 
+    private String orderType;
+
     private String productCode;
 
     private String productName;
@@ -40,6 +42,14 @@ public class CheckAccountLine {
     private Date finishDate;
 
     private String remark;
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
 
     public Integer getCheckLineId() {
         return checkLineId;

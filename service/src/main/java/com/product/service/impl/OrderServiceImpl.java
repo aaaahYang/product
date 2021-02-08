@@ -74,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
 
         Integer orderId= order.getOrderId();
         String orderNum = order.getOrderNum();
-        if(!validInt(orderId) && validStr(orderNum) || validInt(orderId) && !validStr(orderNum)){
+        if(!CommonUtil.validInt(orderId) && CommonUtil.validStr(orderNum) || CommonUtil.validInt(orderId) && !CommonUtil.validStr(orderNum)){
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"保存时订单ID和订单编号不能为空");
         }
         BigDecimal sumPrice = new BigDecimal(0);
@@ -89,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
                 orderLineRepository.save(orderLine);
             }
         }
-        if(!validStr(orderNum)){
+        if(!CommonUtil.validStr(orderNum)){
 
             orderNum = orderNumGenerator(ORDER_TYPE_MAP.get(order.getOrderType()));
             order.setOrderNum(orderNum);
@@ -223,19 +223,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    private Boolean validInt(Integer i){
-        if(i == null || i < 0){
-            return false;
-        }
-        return true;
-    }
 
-    private Boolean validStr(String s){
-        if(s == null || s.isEmpty()){
-            return false;
-        }
-        return true;
-    }
 
 
 }

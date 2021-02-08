@@ -255,3 +255,35 @@ include::{snippets}/order/deleteLine/http-response.adoc[]
 
 .responseFields
 include::{snippets}/order/deleteLine/response-fields.adoc[]
+
+== 从成品列表同步到客户成品接口
+
+/product/refresh
+
+.request
+include::{snippets}/product/refresh/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/product/refresh/request-parameters.adoc[]
+
+.response
+include::{snippets}/product/refresh/http-response.adoc[]
+
+.responseFields
+include::{snippets}/product/refresh/response-fields.adoc[]
+
+== 客户成品列表接口
+
+/customer/productList
+
+.request
+include::{snippets}/customer/productList/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/customer/productList/request-parameters.adoc[]
+
+.response
+include::{snippets}/customer/productList/http-response.adoc[]
+
+.responseFields
+include::{snippets}/customer/productList/response-fields.adoc[]

@@ -56,8 +56,8 @@ public class ProductController {
 
 
     @PostMapping("/refresh")
-    public ResultVO updateCustomerProduct(Integer[] customerIds){
-        return productService.updateCustomerProduct(customerIds);
+    public ResultVO updateCustomerProduct(Integer customerId){
+        return productService.updateCustomerProduct(customerId);
     }
 
 }

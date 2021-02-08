@@ -1,8 +1,10 @@
 package com.product.web.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.product.entity.Customer;
 import com.product.entity.CustomerProduct;
+import com.product.entity.Product;
 import com.product.entity.enums.ResultEnum;
 import com.product.entity.form.CustomerForm;
 import com.product.entity.vo.ValidList;
@@ -105,10 +107,21 @@ public class CustomerController {
     @PostMapping("/deleteLine")
     public ResultVO deleteProductLine(Integer[] productLineIds){
 
-        if(productLineIds.length == 0){
+        if(productLineIds == null ||productLineIds.length == 0){
             return ResultVOUtil.fail(ResultEnum.NOT_EMPTY);
         }
         return customerService.deleteCustomerProduct(productLineIds);
+    }
+
+    @PostMapping("/productList")
+    public ResultVO findProductList(@RequestParam("customerId") Integer customerId,
+                                    @RequestParam(value = "param",required = false) String param){
+        Product product = JSON.parseObject(param,Product.class);
+
+        if (product == null )product = new Product();
+
+        return ResultVOUtil.success(customerService.findProductList(customerId,product));
+
     }
 
 

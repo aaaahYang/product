@@ -29,6 +29,11 @@ public interface CustomerProductDTO {
     String getProductCode();
 
     /**
+     * @return Product.ProductName
+     */
+    String getProductName();
+
+    /**
      * @return customerProduct.Price
      */
     BigDecimal getPrice();

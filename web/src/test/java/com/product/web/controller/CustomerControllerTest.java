@@ -33,6 +33,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 @SpringBootTest
@@ -55,6 +56,7 @@ class CustomerControllerTest  {
     void findCustomerList() throws Exception {
 
         this.mockMvc.perform(get("/customer/list?customerCode=dj"))
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcRestDocumentation.document("customer/list",
                         requestParameters(parameterWithName("customerCode").description("客户编码 [可选]").optional(),
@@ -86,6 +88,7 @@ class CustomerControllerTest  {
     @Test
     void findOne() throws Exception{
         this.mockMvc.perform(RestDocumentationRequestBuilders.get("/customer/find/{customerId}",5))
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcRestDocumentation.document("/customer/find/one",
                         pathParameters(parameterWithName("customerId").description("传入客户ID")),
@@ -109,6 +112,7 @@ class CustomerControllerTest  {
                                 fieldWithPath("data.customerProductDTOS[].productLineId").description("客户成品ID").type(JsonFieldType.NUMBER).optional(),
                                 fieldWithPath("data.customerProductDTOS[].customerId").description("客户ID").type(JsonFieldType.NUMBER).optional(),
                                 fieldWithPath("data.customerProductDTOS[].productCode").description("成品编号").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.customerProductDTOS[].productName").description("成品名称").type(JsonFieldType.STRING).optional(),
                                 fieldWithPath("data.customerProductDTOS[].materialCode").description("物料编码").type(JsonFieldType.STRING).optional(),
                                 fieldWithPath("data.customerProductDTOS[].price").description("默认价格").type(JsonFieldType.NUMBER).optional(),
                                 fieldWithPath("data.customerProductDTOS[].sizeDescription").description("开料尺寸").type(JsonFieldType.STRING).optional(),
@@ -196,6 +200,36 @@ class CustomerControllerTest  {
                 ));
 
     }
+
+    @Test
+    void findProductList() throws Exception{
+        this.mockMvc.perform(post("/customer/productList").param("customerId","5"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print())
+                .andDo(MockMvcRestDocumentation.document("customer/productList",
+                        requestParameters(parameterWithName("param").description("模糊查询使用，选填，传入json字符串,如{productCode:value,[productName:value},提供搜索： 成品编码，成品名称").optional(),
+                                parameterWithName("customerId").description("传入客户ID，必填").optional()),
+                        responseFields(fieldWithPath("code").description("返回状态码，0表示成功").type(JsonFieldType.NUMBER).optional(),
+                                fieldWithPath("msg").description("返回信息").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data").description("返回数据").type(JsonFieldType.ARRAY).optional(),
+                                fieldWithPath("data.[]").description("数据列表").type(JsonFieldType.ARRAY).optional(),
+                                fieldWithPath("data.[].productLineId").description("客户成品ID").type(JsonFieldType.NUMBER).optional(),
+                                fieldWithPath("data.[].customerId").description("客户ID").type(JsonFieldType.NUMBER).optional(),
+                                fieldWithPath("data.[].productCode").description("成品编号，显示").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.[].productName").description("成品名称，显示").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.[].materialCode").description("物料编码").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.[].price").description("默认价格，显示").type(JsonFieldType.NUMBER).optional(),
+                                fieldWithPath("data.[].sizeDescription").description("开料尺寸，显示").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.[].unit").description("单位，显示").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.[].remark").description("备注，显示").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.[].operator").description("修改人").type(JsonFieldType.NUMBER).optional(),
+                                fieldWithPath("data.[].createTime").description("创建时间").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("data.[].updateTime").description("更新时间").type(JsonFieldType.STRING).optional()
+                        )
+                ));
+    }
+
+
 
 
 

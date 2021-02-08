@@ -93,10 +93,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultVO updateCustomerProduct(Integer[] customerIds) {
-        for (Integer i : customerIds){
+    public ResultVO updateCustomerProduct(Integer customerId) {
 
-            List<CustomerProduct> list = customerProductRepository.findByCustomerId(i);
+            List<CustomerProduct> list = customerProductRepository.findByCustomerId(customerId);
             for (CustomerProduct customerProduct : list){
                 String productCode = customerProduct.getProductCode();
                 Optional<Product> optionalProduct = productRepository.findByProductCode(productCode);
@@ -106,7 +105,8 @@ public class ProductServiceImpl implements ProductService {
                 Product product = optionalProduct.get();
                 customerProduct.setPrice(product.getPrice());
             }
-        }
+            customerProductRepository.saveAll(list);
+
         return ResultVOUtil.success();
     }
 }
