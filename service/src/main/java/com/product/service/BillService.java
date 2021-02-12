@@ -6,6 +6,7 @@ import com.product.entity.vo.ResultVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.OutputStream;
 import java.util.Date;
 
 public interface BillService {
@@ -22,7 +23,7 @@ public interface BillService {
 
     ResultVO delete(Integer id);
 
-    ResultVO toExcel(Integer id);
+    ResultVO toExcel(OutputStream outputStream, Integer id);
 
 
 }

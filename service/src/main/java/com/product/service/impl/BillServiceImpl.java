@@ -14,6 +14,10 @@ import com.product.entity.util.ResultVOUtil;
 import com.product.entity.vo.ResultVO;
 import com.product.service.BillService;
 import com.product.service.unit.CommonUtil;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -175,7 +180,24 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public ResultVO toExcel(Integer id) {
+    public ResultVO toExcel(OutputStream outputStream, Integer id) {
+
+        HSSFWorkbook workbook = new HSSFWorkbook();
+
+        HSSFSheet sheet = workbook.createSheet();
+
+        HSSFRow headRow = sheet.createRow(0);
+        HSSFCellStyle headCellStyle = workbook.createCellStyle();
+        headCellStyle.setAlignment(HorizontalAlignment.CENTER);
+        headCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        HSSFFont headCellFont = workbook.createFont();
+        headCellFont.setBold(true);
+        headCellStyle.setFont(headCellFont);
+        headCellStyle.setBorderBottom(BorderStyle.THIN);
+        headCellStyle.setBorderLeft(BorderStyle.THIN);
+        headCellStyle.setBorderRight(BorderStyle.THIN);
+        headCellStyle.setBorderTop(BorderStyle.THIN);
+
 
 
         return null;

@@ -11,7 +11,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -41,7 +43,6 @@ public class SpecificationUnit<T> implements Specification {
 
         List<Predicate> predicates = new ArrayList<>();
 
-
         Class<?> clz = t.getClass();
         for(Field f : clz.getDeclaredFields()){
 
@@ -51,7 +52,13 @@ public class SpecificationUnit<T> implements Specification {
 
                 Object o = method.invoke(t);
 
-                if ( o != null){
+                if (f.getType() == Date.class && o != null ){
+                  //  SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                //   o = simpleDateFormat.format(o);
+                    Predicate predicate = criteriaBuilder.equal(root.get(f.getName()),o);
+                    predicates.add(predicate);
+                }
+                else if ( o != null){
                     Predicate predicate = criteriaBuilder.like(root.get(f.getName()),"%"+o+"%");
                     predicates.add(predicate);
                 }
