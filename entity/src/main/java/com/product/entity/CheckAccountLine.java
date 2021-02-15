@@ -39,6 +39,8 @@ public class CheckAccountLine {
 
     private BigDecimal finishPrice;
 
+    private BigDecimal sumPrice;
+
     private Date finishDate;
 
     private String remark;
@@ -153,5 +155,13 @@ public class CheckAccountLine {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public BigDecimal getSumPrice() {
+        return sumPrice;
+    }
+
+    public void setSumPrice(BigDecimal sumPrice) {
+        this.sumPrice = sumPrice;
     }
 }

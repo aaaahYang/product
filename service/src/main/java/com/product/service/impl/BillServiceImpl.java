@@ -15,9 +15,11 @@ import com.product.entity.vo.ResultVO;
 import com.product.service.BillService;
 import com.product.service.unit.CommonUtil;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -116,24 +120,28 @@ public class BillServiceImpl implements BillService {
         List<CheckAccountLine> checkAccountLines = new ArrayList<>();
         BigDecimal sumPrice = new BigDecimal("0.0");
         CheckAccountLine checkAccountLine;
-        int row  = 1;
+
         for(Order order : shList){
             List<OrderLine> orderLines = orderLineRepository.findByOrderIdOrderByOrderLineId(order.getOrderId());
+            int row  = 1;
+
             for (OrderLine orderLine : orderLines){
                 checkAccountLine = setCheckAccountLine(order,row,checkId,orderLine);
                 checkAccountLines.add(checkAccountLine);
-                sumPrice = sumPrice.add(orderLine.getFinishPrice());
+                sumPrice = sumPrice.add(checkAccountLine.getSumPrice());
                 row++;
             }
         }
         List<Order> thList = orderRepository.findByFinishTimeBetweenAndOrderTypeOrderByOrderId(start,end,"退货单");
         for(Order order : thList){
             List<OrderLine> orderLines = orderLineRepository.findByOrderIdOrderByOrderLineId(order.getOrderId());
+            int row  = 1;
+
             for (OrderLine orderLine : orderLines){
                 checkAccountLine = setCheckAccountLine(order,row,checkId,orderLine);
 
                 checkAccountLines.add(checkAccountLine);
-                sumPrice = sumPrice.subtract(orderLine.getFinishPrice());
+                sumPrice = sumPrice.subtract(checkAccountLine.getSumPrice());
                 row++;
             }
         }
@@ -142,23 +150,22 @@ public class BillServiceImpl implements BillService {
         checkAccount.setSumPrice(sumPrice);
         checkAccountRepository.save(checkAccount);
 
-        return ResultVOUtil.success();
+        return ResultVOUtil.success(checkAccount.getCheckId());
     }
 
     @Override
     public ResultVO publish(Integer id) {
-        Optional<CheckAccount> checkAccountOptional = checkAccountRepository.findById(id);
-        if (!checkAccountOptional.isPresent()){
-            return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
-        }
-        CheckAccount checkAccount = checkAccountOptional.get();
-        if (!checkAccount.getStatus().equals("制单") ){
-            return ResultVOUtil.fail(ResultEnum.VALID_ORDER_ERROR);
+        ResultEnum resultEnum = validStatus(id);
+
+        if (!resultEnum.equals(ResultEnum.SUCCESS)){
+            return ResultVOUtil.fail(resultEnum);
         }
 
         if (checkAccountLineRepository.countByCheckId(id)<=0){
             return ResultVOUtil.fail(ResultEnum.BILL_PUBLISH_ERROR);
         }
+        CheckAccount checkAccount = checkAccountRepository.findById(id).get();
+        checkAccount.setCheckId(id);
         checkAccount.setStatus("已发布");
         checkAccountRepository.save(checkAccount);
 
@@ -170,8 +177,10 @@ public class BillServiceImpl implements BillService {
     @Transactional
     public ResultVO delete(Integer id) {
 
-        if (!checkAccountRepository.existsById(id)){
-            return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
+        ResultEnum resultEnum = validStatus(id);
+
+        if (!resultEnum.equals(ResultEnum.SUCCESS)){
+            return ResultVOUtil.fail(resultEnum);
         }
         checkAccountLineRepository.deleteByCheckId(id);
         checkAccountRepository.deleteById(id);
@@ -180,17 +189,24 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public ResultVO toExcel(OutputStream outputStream, Integer id) {
+    public String toExcel(OutputStream outputStream, Integer id) {
 
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        if(!checkAccountRepository.existsById(id)){
+            return ResultEnum.NOT_FIND_RECODE.getMsg();
+        }
+        CheckAccount checkAccount = checkAccountRepository.findById(id).get();
 
-        HSSFSheet sheet = workbook.createSheet();
+        String[] strings = {"订单编号","行号","单据类型","客户编码","客户名称","产品编码","产品名称","单位","数量","单价","总价","完结日期"};
 
-        HSSFRow headRow = sheet.createRow(0);
-        HSSFCellStyle headCellStyle = workbook.createCellStyle();
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+
+        SXSSFSheet sheet = workbook.createSheet(checkAccount.getCheckCode());
+
+        SXSSFRow sxssfRow = sheet.createRow(0);
+        CellStyle headCellStyle = workbook.createCellStyle();
         headCellStyle.setAlignment(HorizontalAlignment.CENTER);
         headCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        HSSFFont headCellFont = workbook.createFont();
+        Font headCellFont = workbook.createFont();
         headCellFont.setBold(true);
         headCellStyle.setFont(headCellFont);
         headCellStyle.setBorderBottom(BorderStyle.THIN);
@@ -198,11 +214,70 @@ public class BillServiceImpl implements BillService {
         headCellStyle.setBorderRight(BorderStyle.THIN);
         headCellStyle.setBorderTop(BorderStyle.THIN);
 
+        SXSSFCell sxssfCell;
 
+        for(int i =0 ; i< strings.length ; i++){
+            sxssfCell = sxssfRow.createCell(i);
+            sxssfCell.setCellValue(strings[i]);
+            sxssfCell.setCellStyle(headCellStyle);
+        }
 
-        return null;
+        CellStyle lineCellStyle = workbook.createCellStyle();
+        lineCellStyle.setBorderBottom(BorderStyle.THIN);
+        lineCellStyle.setBorderLeft(BorderStyle.THIN);
+        lineCellStyle.setBorderRight(BorderStyle.THIN);
+        lineCellStyle.setBorderTop(BorderStyle.THIN);
+
+        List<CheckAccountLine> checkAccountLines = checkAccountLineRepository.findByCheckIdOrderByRowNumAsc(id);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        int i =0;
+
+        for (CheckAccountLine checkAccountLine : checkAccountLines){
+
+            sxssfRow = sheet.createRow(i+1);
+
+            sxssfRow.createCell(0).setCellValue(checkAccountLine.getOrderCode());
+            sxssfRow.createCell(1).setCellValue(checkAccountLine.getRowNum());
+            sxssfRow.createCell(2).setCellValue(checkAccountLine.getOrderType());
+            sxssfRow.createCell(3).setCellValue(checkAccountLine.getCustomerCode());
+            sxssfRow.createCell(4).setCellValue(checkAccountLine.getCustomerName());
+            sxssfRow.createCell(5).setCellValue(checkAccountLine.getProductCode());
+            sxssfRow.createCell(6).setCellValue(checkAccountLine.getProductName());
+            sxssfRow.createCell(7).setCellValue(checkAccountLine.getUnit());
+            sxssfRow.createCell(8).setCellValue(checkAccountLine.getActualQuantity());
+            sxssfRow.createCell(9).setCellValue(checkAccountLine.getFinishPrice().doubleValue());
+            sxssfRow.createCell(10).setCellValue(checkAccountLine.getSumPrice().doubleValue());
+            sxssfRow.createCell(11).setCellValue(simpleDateFormat.format(checkAccountLine.getFinishDate()));
+
+            i++;
+        }
+
+        try {
+            workbook.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResultEnum.EXPORT_EXCEL_ERROR.getMsg();
+        }
+
+        return "导出成功";
     }
 
+    @Override
+    public ResultVO save(Integer id, String remark) {
+        ResultEnum resultEnum = validStatus(id);
+        if(!resultEnum.equals(ResultEnum.SUCCESS)){
+            return ResultVOUtil.fail(resultEnum);
+        }
+        CheckAccount checkAccount = checkAccountRepository.findById(id).get();
+        checkAccount.setRemark(remark);
+
+        checkAccountRepository.save(checkAccount);
+
+        return ResultVOUtil.success();
+    }
 
     private synchronized String checkCodeGenerator(String ym){
 
@@ -213,7 +288,7 @@ public class BillServiceImpl implements BillService {
         if (checkAccountOptional.isPresent()){
             CheckAccount checkAccount = checkAccountOptional.get();
             String checkCode = checkAccount.getCheckCode();
-            seq = new Integer(checkCode.substring(ym.length()+1));
+            seq = new Integer(checkCode.substring(ym.length()))+1;
         }
 
         return stringBuilder.append(CommonUtil.addZero(seq,4)).toString();
@@ -233,10 +308,25 @@ public class BillServiceImpl implements BillService {
         checkAccountLine.setProductCode(orderLine.getProductCode());
         checkAccountLine.setProductName(orderLine.getProductName());
         checkAccountLine.setFinishPrice(orderLine.getFinishPrice());
+        checkAccountLine.setSumPrice(orderLine.getFinishPrice().multiply(new BigDecimal(orderLine.getActualQuantity())));
         checkAccountLine.setUnit(orderLine.getUnit());
         return checkAccountLine;
 
     }
+
+
+    private ResultEnum validStatus (Integer id){
+        Optional<CheckAccount> checkAccountOptional = checkAccountRepository.findById(id);
+        if (!checkAccountOptional.isPresent()){
+            return ResultEnum.NOT_FIND_RECODE;
+        }
+        CheckAccount checkAccount = checkAccountOptional.get();
+        if (!checkAccount.getStatus().equals("制单") ){
+            return ResultEnum.VALID_ORDER_ERROR;
+        }
+        return ResultEnum.SUCCESS;
+    }
+
 
 
 

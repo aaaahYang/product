@@ -23,7 +23,9 @@ public interface BillService {
 
     ResultVO delete(Integer id);
 
-    ResultVO toExcel(OutputStream outputStream, Integer id);
+    String toExcel(OutputStream outputStream, Integer id);
+
+    ResultVO save(Integer id,String remark);
 
 
 }

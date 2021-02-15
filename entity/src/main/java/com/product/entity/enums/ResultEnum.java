@@ -11,6 +11,8 @@ public enum ResultEnum {
     VALID_ORDER_ERROR(105,"只能操作“制单”状态的单据"),
     ERROR_REQUEST(106,"错误的请求方式"),
     BILL_PUBLISH_ERROR(107,"对账单没有对应的明细行，不能发布"),
+    EXPORT_EXCEL_ERROR(108,"导出EXCEL失败"),
+    LOGIN_ERROR(110,"登录失败，用户名或密码错误"),
 
     ;
 

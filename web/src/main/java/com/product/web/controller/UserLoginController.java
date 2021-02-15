@@ -1,19 +1,33 @@
 package com.product.web.controller;
 
 
+import com.alibaba.fastjson.JSON;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.product.dao.repository.UserRepository;
 import com.product.entity.Customer;
 import com.product.entity.CustomerProduct;
+import com.product.entity.User;
 import com.product.entity.dto.CustomerDTO;
+import com.product.entity.enums.ResultEnum;
 import com.product.entity.form.CustomerForm;
+import com.product.entity.util.ResultVOUtil;
 import com.product.entity.vo.ResultVO;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class UserLoginController {
+
+    private static final Logger log = LoggerFactory.getLogger(UserLoginController.class);
+
+    @Autowired
+    private UserRepository userRepository ;
 
     @PostMapping("/login")
     public Map login(){
@@ -47,11 +61,57 @@ public class UserLoginController {
         return map;
     }
 
-    @RequestMapping("/beans")
-    public void test(@RequestBody CustomerForm customerForm){
+    @GetMapping("/jwt")
+    public ResultVO jwtTest(@RequestParam("account") String account,
+                            @RequestParam("password") String password){
 
-        System.out.println(customerForm.getCustomerCode());
-       // System.out.println(customerForm.getCustomerProducts().get(0).getCustomerId());
+        Optional<User> userOptional = userRepository.findByUserAccount(account);
+        if (!userOptional.isPresent()){
+            return ResultVOUtil.fail(ResultEnum.LOGIN_ERROR);
+        }
+        User user = userOptional.get();
+        String md5pwd = DigestUtils.md5Hex(password);
+        if(!md5pwd.equals(user.getUserPwd())){
+            return ResultVOUtil.fail(ResultEnum.LOGIN_ERROR);
+        }
+
+        Map<String,Object> map = new HashMap<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE,60);
+        String token = JWT.create()
+                .withHeader(map)
+                .withClaim("userId",user.getUserId())
+                .withClaim("userName",user.getUserName())
+                .withIssuedAt(calendar.getTime())
+                .sign(Algorithm.HMAC256("productJWT"));
+        System.out.println(token);
+        return ResultVOUtil.success(token);
+
+    }
+    
+
+    @PostMapping("/save")
+    public ResultVO save(@RequestParam("action") String action ,
+                          @RequestParam("user") String userJson){
+        User temp = JSON.parseObject(userJson,User.class);
+        if (temp == null) return ResultVOUtil.fail(ResultEnum.ERROR_REQUEST);
+
+        Optional<User> userOptional = userRepository.findByUserAccount(temp.getUserAccount());
+        User user;
+        if (!userOptional.isPresent() && action.equals("add")){
+            user = new User();
+            user.setUserAccount(temp.getUserAccount());
+            user.setUserName(temp.getUserName());
+            user.setUserPwd(DigestUtils.md5Hex(temp.getUserPwd()));
+        }else if (userOptional.isPresent() && action.equals("update")){
+            user = userOptional.get();
+            user.setUserName(temp.getUserName());
+            user.setUserPwd(DigestUtils.md5Hex(temp.getUserPwd()));
+        }else{
+            return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
+        }
+        userRepository.save(user);
+        return ResultVOUtil.success();
     }
 
 
