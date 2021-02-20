@@ -55,17 +55,19 @@ public class BillController {
 
     @RequestMapping("/create")
     public ResultVO create(@RequestParam(value = "ym") String ym){
+        log.info("创建对账单,ym:"+ym);
         return billService.create(ym);
     }
 
     @RequestMapping("/publish")
     public ResultVO publish(@RequestParam(value = "id") Integer id){
-
+        log.info("发布对账单,id:"+id);
         return billService.publish(id);
     }
 
     @RequestMapping("/delete")
     public ResultVO delete(@RequestParam(value = "id") Integer id){
+        log.info("删除对账单,id:"+id);
         return billService.delete(id);
     }
 
@@ -79,6 +81,7 @@ public class BillController {
             e.printStackTrace();
         }
         try {
+            log.info("导出对账单EXCEL,id:"+id);
              return billService.toExcel(response.getOutputStream(),id);
 
         } catch (IOException e) {
@@ -92,6 +95,7 @@ public class BillController {
         CheckAccount checkAccount = new CheckAccount();
         checkAccount.setCheckId(id);
         checkAccount.setRemark(remark);
+        log.info("对账单修改,id:"+id+" ,remark:"+remark);
         return billService.save(id,remark);
     }
 

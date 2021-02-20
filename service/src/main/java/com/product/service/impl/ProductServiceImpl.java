@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,10 +47,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ResultVO save(Product product) {
 
         Optional<Material> optionalMaterial = materialRepository.findByMaterialCode(product.getMaterialCode());
         if(!optionalMaterial.isPresent()){
+            log.info("变更成品失败，没找到对应的物料编号:"+product.getMaterialCode());
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"物料编号 "+product.getMaterialCode()+" 不存在");
         }
 
@@ -60,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
             Product m = optionalProduct.get();
 
             if (!m.getProductId().equals(product.getProductId()) && m.getProductCode().equals(product.getProductCode())){
-                log.info("产品编码不允许重复，" + JSONObject.toJSONString(product));
+                log.info("成品编码不允许重复，" + JSONObject.toJSONString(product));
                 return ResultVOUtil.fail(ResultEnum.PARAM_REPEAT, "产品编码");
             }
 
@@ -78,6 +81,7 @@ public class ProductServiceImpl implements ProductService {
      * @return
      */
     @Override
+    @Transactional
     public ResultVO delete(Integer[] productIds) {
 
         for(Integer i : productIds){
@@ -93,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ResultVO updateCustomerProduct(Integer customerId) {
 
             List<CustomerProduct> list = customerProductRepository.findByCustomerId(customerId);
@@ -100,6 +105,7 @@ public class ProductServiceImpl implements ProductService {
                 String productCode = customerProduct.getProductCode();
                 Optional<Product> optionalProduct = productRepository.findByProductCode(productCode);
                 if(!optionalProduct.isPresent()){
+                    log.info("刷新客户成品失败");
                     return ResultVOUtil.fail(ResultEnum.UPDATE_CUSTOMER_PRODUCT_ERROR,productCode);
                 }
                 Product product = optionalProduct.get();

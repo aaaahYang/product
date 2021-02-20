@@ -8,6 +8,7 @@ import com.product.entity.OrderLine;
 import com.product.entity.dto.OrderDTO;
 import com.product.entity.enums.ResultEnum;
 import com.product.entity.util.ResultVOUtil;
+import com.product.entity.vo.OrderSearchVO;
 import com.product.entity.vo.ResultVO;
 import com.product.service.OrderService;
 import com.product.service.unit.CommonUtil;
@@ -17,8 +18,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -44,9 +50,58 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Page<Order> findList(Order order, PageRequest pageRequest) {
+    public Page<Order> findList(OrderSearchVO order, PageRequest pageRequest) {
 
-        SpecificationUnit<Order> specification = new SpecificationUnit<>(order);
+        //SpecificationUnit<Order> specification = new SpecificationUnit<>(order);
+        Specification specification = new Specification() {
+            @Override
+            public Predicate toPredicate(Root root, CriteriaQuery query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+                Predicate predicate;
+                if (order.getOrderNum() != null){
+                    predicate = criteriaBuilder.like(root.get("orderNum"),"%"+order.getOrderNum()+"%");
+                    predicates.add(predicate);
+                }
+                if (order.getCustomerCode()!= null){
+                    predicate = criteriaBuilder.like(root.get("customerCode"),"%"+order.getCustomerCode()+"%");
+                    predicates.add(predicate);
+                }
+                if (order.getCustomerName() != null){
+                    predicate = criteriaBuilder.like(root.get("customerName"),"%"+order.getCustomerName()+"%");
+                    predicates.add(predicate);
+                }
+                if (order.getOrderType() != null){
+                    predicate = criteriaBuilder.equal(root.get("orderType"),order.getOrderType());
+                    predicates.add(predicate);
+                }
+                if (order.getStatus() != null){
+                    predicate = criteriaBuilder.equal(root.get("status"),order.getOrderNum());
+                    predicates.add(predicate);
+                }
+                if (order.getStartDate() != null || order.getEndDate() != null){
+                    String rootName ;
+                    if (order.getDateType() == null) order.setDateType("创建时间");
+                    switch (order.getDateType()){
+                        case "完结时间": rootName = "finishTime";
+                            break;
+                        default:rootName="createTime";
+                    }
+                    if (order.getStartDate() != null && order.getEndDate() != null){
+                        predicate = criteriaBuilder.between(root.get(rootName),order.getStartDate(),order.getEndDate());
+                        predicates.add(predicate);
+                    }else if(order.getStartDate() != null){
+                        predicate = criteriaBuilder.greaterThanOrEqualTo(root.get(rootName),order.getStartDate());
+                        predicates.add(predicate);
+                    }else{
+                        predicate = criteriaBuilder.lessThanOrEqualTo(root.get(rootName),order.getEndDate());
+                        predicates.add(predicate);
+                    }
+                }
+
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
 
         return orderRepository.findAll(specification,pageRequest);
     }
@@ -75,6 +130,7 @@ public class OrderServiceImpl implements OrderService {
         Integer orderId= order.getOrderId();
         String orderNum = order.getOrderNum();
         if(!CommonUtil.validInt(orderId) && CommonUtil.validStr(orderNum) || CommonUtil.validInt(orderId) && !CommonUtil.validStr(orderNum)){
+            log.info("保存订单失败");
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"保存时订单ID和订单编号不能为空");
         }
         BigDecimal sumPrice = new BigDecimal(0);
@@ -82,6 +138,7 @@ public class OrderServiceImpl implements OrderService {
 
             for (OrderLine orderLine : orderLines){
                 if(!orderId.equals(orderLine.getOrderId())){
+                    log.info("保存订单失败");
                     return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"订单ID与明细不匹配");
                 }
                 if (orderLine.getFinishPrice() != null )
@@ -109,6 +166,7 @@ public class OrderServiceImpl implements OrderService {
         ResultEnum resultEnum = validOrderStatusA(orderId);
 
         if(!resultEnum.equals(ResultEnum.SUCCESS)){
+            log.info("删除订单失败");
             return ResultVOUtil.fail(resultEnum);
         }
 
@@ -130,6 +188,7 @@ public class OrderServiceImpl implements OrderService {
                 ResultEnum resultEnum = validOrderStatusA(orderLine.getOrderId());
 
                 if(!resultEnum.equals(ResultEnum.SUCCESS)){
+                    log.info("保存订单行失败");
                     return ResultVOUtil.fail(resultEnum);
                 }
                 orderLineRepository.deleteById(i);
@@ -144,21 +203,26 @@ public class OrderServiceImpl implements OrderService {
         ResultEnum resultEnum = validOrderStatusA(order.getOrderId());
 
         if(!resultEnum.equals(ResultEnum.SUCCESS)){
+            log.info("发布订单失败");
             return ResultVOUtil.fail(resultEnum);
         }
         if(orderLines.size() <= 0){
+            log.info("发布订单失败");
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"没找到行记录");
         }
 
         for (OrderLine orderLine : orderLines){
             if (orderLine.getActualQuantity() == null || orderLine.getActualQuantity().compareTo(0)< 0){
+                log.info("发布订单失败");
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际数量不能为空");
             }
             if (orderLine.getActualQuantity().compareTo(orderLine.getQuantity()) > 0){
+                log.info("发布订单失败");
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际数量不能多于订单数量");
             }
 
             if (orderLine.getFinishPrice() == null || orderLine.getFinishPrice().compareTo(new BigDecimal("0.0")) < 0){
+                log.info("发布订单失败");
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"最终价格不能为空");
             }
 

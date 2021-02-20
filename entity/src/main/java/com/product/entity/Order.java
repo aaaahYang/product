@@ -30,6 +30,9 @@ public class Order {
     @ColumnDefault("制单")
     private String status;
 
+    @NotNull(message = "客户ID不能为空")
+    private Integer customerId;
+
     @NotEmpty(message = "客户编码不能为空")
     private String customerCode;
 
@@ -87,6 +90,14 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
     public String getCustomerCode() {

@@ -401,3 +401,18 @@ include::{snippets}/bill/delete/http-response.adoc[]
 include::{snippets}/bill/delete/response-fields.adoc[]
 
 
+== 修改用户接口
+
+/user/save
+
+.request
+include::{snippets}/user/save/http-request.adoc[]
+
+.requestParameter
+include::{snippets}/user/save/request-parameters.adoc[]
+
+.response
+include::{snippets}/user/save/http-response.adoc[]
+
+.responseFields
+include::{snippets}/user/save/response-fields.adoc[]

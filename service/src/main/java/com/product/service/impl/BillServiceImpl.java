@@ -91,6 +91,7 @@ public class BillServiceImpl implements BillService {
     public ResultVO create(String ym) {
 
         if(ym.length() != 6 || !CommonUtil.isNumeric(ym)){
+            log.info("创建对账单失败");
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"传入6位长度年月，如：202102");
         }
 
@@ -154,14 +155,17 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    @Transactional
     public ResultVO publish(Integer id) {
         ResultEnum resultEnum = validStatus(id);
 
         if (!resultEnum.equals(ResultEnum.SUCCESS)){
+            log.info("发布对账单失败");
             return ResultVOUtil.fail(resultEnum);
         }
 
         if (checkAccountLineRepository.countByCheckId(id)<=0){
+            log.info("发布对账单失败");
             return ResultVOUtil.fail(ResultEnum.BILL_PUBLISH_ERROR);
         }
         CheckAccount checkAccount = checkAccountRepository.findById(id).get();
@@ -180,6 +184,7 @@ public class BillServiceImpl implements BillService {
         ResultEnum resultEnum = validStatus(id);
 
         if (!resultEnum.equals(ResultEnum.SUCCESS)){
+            log.info("删除对账单失败");
             return ResultVOUtil.fail(resultEnum);
         }
         checkAccountLineRepository.deleteByCheckId(id);
@@ -192,6 +197,7 @@ public class BillServiceImpl implements BillService {
     public String toExcel(OutputStream outputStream, Integer id) {
 
         if(!checkAccountRepository.existsById(id)){
+            log.info("导出对账单失败");
             return ResultEnum.NOT_FIND_RECODE.getMsg();
         }
         CheckAccount checkAccount = checkAccountRepository.findById(id).get();
@@ -266,9 +272,11 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    @Transactional
     public ResultVO save(Integer id, String remark) {
         ResultEnum resultEnum = validStatus(id);
         if(!resultEnum.equals(ResultEnum.SUCCESS)){
+            log.info("修改对账单失败");
             return ResultVOUtil.fail(resultEnum);
         }
         CheckAccount checkAccount = checkAccountRepository.findById(id).get();

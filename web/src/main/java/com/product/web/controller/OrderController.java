@@ -7,6 +7,7 @@ import com.product.entity.OrderLine;
 import com.product.entity.enums.ResultEnum;
 import com.product.entity.form.OrderForm;
 import com.product.entity.util.ResultVOUtil;
+import com.product.entity.vo.OrderSearchVO;
 import com.product.entity.vo.ResultVO;
 import com.product.service.OrderService;
 import com.product.web.util.PageResultUtil;
@@ -43,8 +44,10 @@ public class OrderController {
     public ResultVO findList(@RequestParam(value = "param",required = false) String param,
                              @RequestParam(value = "page",defaultValue = "1") Integer page,
                              @RequestParam(value = "size",defaultValue = "10") Integer size){
-        Order order = JSON.parseObject(param, Order.class);
-        if(order == null) order = new Order();
+//        Order order = JSON.parseObject(param, Order.class);
+//        if(order == null) order = new Order();
+        OrderSearchVO order = JSON.parseObject(param,OrderSearchVO.class);
+        if (order == null) order = new OrderSearchVO();
         return ResultVOUtil.success(PageResultUtil.toResult(orderService.findList(order,
                 PageRequest.of(page-1,size, Sort.Direction.DESC,"orderId"))));
     }
@@ -79,8 +82,12 @@ public class OrderController {
         String action = orderForm.getAction();
         if (order.getStatus() == null) order.setStatus("制单");
         switch (action){
-            case "save": return orderService.save(order,orderLines);
-            case "finish": return orderService.finish(order,orderLines);
+            case "save":
+                log.info("订单变更,orderForm:"+JSON.toJSONString(orderForm));
+                return orderService.save(order,orderLines);
+            case "finish":
+                log.info("订单发布,orderForm:"+JSON.toJSONString(orderForm));
+                return orderService.finish(order,orderLines);
             default: return ResultVOUtil.fail(ResultEnum.ERROR_REQUEST);
         }
     }
@@ -88,12 +95,14 @@ public class OrderController {
     @PostMapping("/delete")
     public ResultVO delete(Integer orderId){
 
+        log.info("订单删除,orderId:"+orderId);
         return orderService.delete(orderId);
     }
 
     @PostMapping("/deleteLine")
     public ResultVO deleteLine(Integer[] orderLineIds){
 
+        log.info("订单行删除,orderLineIds:"+JSON.toJSONString(orderLineIds));
         return orderService.deleteLine(orderLineIds);
     }
 

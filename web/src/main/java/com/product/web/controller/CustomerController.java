@@ -85,7 +85,7 @@ public class CustomerController {
 
         Customer customer = new Customer();
         BeanUtils.copyProperties(customerForm,customer);
-
+        logger.info("客户变更,customerForm:"+JSON.toJSONString(customerForm));
         return customerService.save(customer,customerProducts);
     }
 
@@ -100,7 +100,7 @@ public class CustomerController {
         if (customerIds.length == 0){
             return ResultVOUtil.fail(ResultEnum.NOT_EMPTY);
         }
-
+        logger.info("删除客户,customerIds:"+JSON.toJSONString(customerIds));
         return customerService.delete(customerIds);
     }
 
@@ -110,6 +110,7 @@ public class CustomerController {
         if(productLineIds == null ||productLineIds.length == 0){
             return ResultVOUtil.fail(ResultEnum.NOT_EMPTY);
         }
+        logger.info("删除客户成品,productLineIds:"+JSON.toJSONString(productLineIds));
         return customerService.deleteCustomerProduct(productLineIds);
     }
 

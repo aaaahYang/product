@@ -43,13 +43,13 @@ public class ProductController {
         if (bindingResult.hasErrors()){
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,bindingResult.getFieldError().getDefaultMessage());
         }
-
-
+        log.info("成品变更,product:"+JSON.toJSONString(product));
         return productService.save(product);
     }
 
     @RequestMapping("/delete")
     public ResultVO delete(Integer[] productIds){
+        log.info("删除成品,productIds:"+JSON.toJSONString(productIds));
         return productService.delete(productIds);
     }
 
@@ -57,6 +57,7 @@ public class ProductController {
 
     @PostMapping("/refresh")
     public ResultVO updateCustomerProduct(Integer customerId){
+        log.info("更新客户成品，customerId:"+customerId);
         return productService.updateCustomerProduct(customerId);
     }
 

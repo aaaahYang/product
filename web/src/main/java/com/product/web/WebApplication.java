@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.product.dao")
 @EntityScan(basePackages = "com.product.entity")
-@ComponentScan(basePackages = {"com.product.service","com.product.web.controller","com.product.web.config"})
+@ComponentScan(basePackages = {"com.product.service","com.product.web"})
 @EnableJpaAuditing
 public class WebApplication {
 

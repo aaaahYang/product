@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.*;
 
 @RestController
@@ -27,9 +30,12 @@ public class UserLoginController {
     private static final Logger log = LoggerFactory.getLogger(UserLoginController.class);
 
     @Autowired
+    private Validator validator;
+
+    @Autowired
     private UserRepository userRepository ;
 
-    @PostMapping("/login")
+    /*@PostMapping("/login")
     public Map login(){
         Map map = new HashMap();
         Map result = new HashMap();
@@ -40,7 +46,7 @@ public class UserLoginController {
         map.put("result",result);
 
         return map;
-    }
+    }*/
 
     @RequestMapping("/userInfo")
     public Map userInfo(){
@@ -61,40 +67,63 @@ public class UserLoginController {
         return map;
     }
 
-    @GetMapping("/jwt")
-    public ResultVO jwtTest(@RequestParam("account") String account,
-                            @RequestParam("password") String password){
+    @PostMapping("/login")
+    public Map jwtLogin(@RequestParam("account") String account,
+                            @RequestParam("password") String password, HttpServletResponse response){
+
+
+        Map resultMap = new HashMap();
+        Map result = new HashMap();
 
         Optional<User> userOptional = userRepository.findByUserAccount(account);
         if (!userOptional.isPresent()){
-            return ResultVOUtil.fail(ResultEnum.LOGIN_ERROR);
+            resultMap.put("code",ResultEnum.LOGIN_ERROR.getCode());
+            resultMap.put("msg",ResultEnum.LOGIN_ERROR.getMsg());
+            return resultMap;
         }
         User user = userOptional.get();
         String md5pwd = DigestUtils.md5Hex(password);
         if(!md5pwd.equals(user.getUserPwd())){
-            return ResultVOUtil.fail(ResultEnum.LOGIN_ERROR);
+            resultMap.put("code",ResultEnum.LOGIN_ERROR.getCode());
+            resultMap.put("msg",ResultEnum.LOGIN_ERROR.getMsg());
+            return resultMap;
         }
 
         Map<String,Object> map = new HashMap<>();
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE,60);
+        calendar.add(Calendar.MINUTE,600);
         String token = JWT.create()
                 .withHeader(map)
                 .withClaim("userId",user.getUserId())
                 .withClaim("userName",user.getUserName())
-                .withIssuedAt(calendar.getTime())
+                .withExpiresAt(calendar.getTime())
                 .sign(Algorithm.HMAC256("productJWT"));
-        System.out.println(token);
-        return ResultVOUtil.success(token);
+        response.setHeader("token",token);
+
+        resultMap.put("code",0);
+        resultMap.put("msg","success");
+        result.put("token",token);
+        resultMap.put("result",result);
+
+        log.info(user.getUserName()+"登录系统");
+
+
+        return resultMap;
 
     }
     
 
-    @PostMapping("/save")
+    @PostMapping("/user/save")
     public ResultVO save(@RequestParam("action") String action ,
                           @RequestParam("user") String userJson){
         User temp = JSON.parseObject(userJson,User.class);
         if (temp == null) return ResultVOUtil.fail(ResultEnum.ERROR_REQUEST);
+
+        Set<ConstraintViolation<User>> constraintViolations = validator.validate(temp);
+        for(ConstraintViolation constraintViolation : constraintViolations) {
+            return ResultVOUtil.fail(ResultEnum.VALID_ERROR, constraintViolation.getMessage());
+        }
+
 
         Optional<User> userOptional = userRepository.findByUserAccount(temp.getUserAccount());
         User user;
@@ -111,8 +140,10 @@ public class UserLoginController {
             return ResultVOUtil.fail(ResultEnum.NOT_FIND_RECODE);
         }
         userRepository.save(user);
+        log.info("action:"+action+" ,user:"+user.getUserAccount());
         return ResultVOUtil.success();
     }
+
 
 
 }

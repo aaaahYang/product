@@ -15,6 +15,8 @@ import com.product.entity.util.ResultVOUtil;
 import com.product.entity.vo.ResultVO;
 import com.product.service.CustomerService;
 import com.product.service.unit.CommonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,8 @@ import java.util.*;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
+
+    private final static Logger log = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -87,6 +91,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             Optional<Customer> customerOptional = customerRepository.findByCustomerCode(customer.getCustomerCode());
             if (customerOptional.isPresent()){
+                log.info("变更客户失败,客户编码已存在:"+customer.getCustomerCode());
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"客户编号已存在");
             }
         }
@@ -95,15 +100,18 @@ public class CustomerServiceImpl implements CustomerService {
             Optional<Product> productOptional;
             for (CustomerProduct customerProduct:customerProducts){
                 if (!customerRepository.existsById(customerProduct.getCustomerId())){
+                    log.info("变更客户失败，找不到对应的客户ID:"+customerProduct.getCustomerId());
                     return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"找不到对应的客户ID");
                 }
                 productOptional = productRepository.findByProductCode(customerProduct.getProductCode());
                 if(!productOptional.isPresent()){
-                    return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"找该 "+customerProduct.getProductCode()+" 不到产品编码");
+                    log.info("变更客户失败，找不到对应的成品编码:"+customerProduct.getProductCode());
+                    return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"找该 "+customerProduct.getProductCode()+" 不到成品编码");
                 }
                 if (customerProduct.getProductLineId() == null && customerProduct.getProductCode() != null){
                     Optional<CustomerProduct> customerProductOptional = customerProductRepository.findByCustomerIdAndAndProductCode(customerProduct.getCustomerId(),customerProduct.getProductCode());
                     if (customerProductOptional.isPresent()){
+                        log.info("变更客户失败，该客户已存在相同的产品编码:"+customerProduct.getProductCode());
                         return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"该客户已存在相同的产品编码："+customerProduct.getProductCode());
                     }
                 }
@@ -136,6 +144,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public ResultVO deleteCustomerProduct(Integer[] productLineIds) {
 
         for (Integer i: productLineIds){

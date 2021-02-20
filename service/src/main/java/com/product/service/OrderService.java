@@ -2,6 +2,7 @@ package com.product.service;
 
 import com.product.entity.Order;
 import com.product.entity.OrderLine;
+import com.product.entity.vo.OrderSearchVO;
 import com.product.entity.vo.ResultVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,11 +13,11 @@ public interface OrderService {
 
     /**
      * 查询订单列表
-     * @param order
+     * @param OrderSearchVO
      * @param pageRequest
      * @return
      */
-    Page<Order> findList(Order order, PageRequest pageRequest);
+    Page<Order> findList(OrderSearchVO order, PageRequest pageRequest);
 
     /**
      * 查询订单明细

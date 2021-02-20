@@ -52,11 +52,13 @@ public class MaterialController {
         if(bindingResult.hasErrors()){
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,bindingResult.getFieldError().getDefaultMessage());
         }
+        logger.info("物料变更,material:"+JSON.toJSONString(material));
         return materialService.save(material);
     }
 
     @RequestMapping("/delete")
     public ResultVO delete(Integer[] materialIds){
+        logger.info("删除物料,materialIds:"+JSON.toJSONString(materialIds));
         return materialService.delete(materialIds);
     }
 

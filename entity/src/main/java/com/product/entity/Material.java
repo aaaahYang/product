@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -18,10 +19,10 @@ public class Material {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer materialId;
 
-    @NotNull(message = "物料编码不允许为空")
+    @NotEmpty(message = "物料编码不允许为空")
     private String materialCode;
 
-    @NotNull(message = "物料名称不允许为空")
+    @NotEmpty(message = "物料名称不允许为空")
     private String materialName;
 
     private String materialType;
