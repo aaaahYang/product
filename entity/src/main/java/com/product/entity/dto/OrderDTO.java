@@ -19,6 +19,8 @@ public class OrderDTO {
 
     private String status;
 
+    private Integer customerId;
+
     private String customerCode;
 
     private String customerName;
@@ -65,6 +67,14 @@ public class OrderDTO {
 
     public void setOrderNum(String orderNum) {
         this.orderNum = orderNum;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
     public String getStatus() {

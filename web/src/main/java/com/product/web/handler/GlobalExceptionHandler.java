@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 
     private final static Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private static final Integer RESULT_CODE = -2;
+    private static final Integer RESULT_CODE = -1;
 
     @ExceptionHandler(Exception.class)
     public ResultVO exceptionHandler(HttpServletRequest request,Exception e){

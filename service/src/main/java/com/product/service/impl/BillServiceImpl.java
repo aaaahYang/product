@@ -82,7 +82,7 @@ public class BillServiceImpl implements BillService {
             return null;
         }
 
-        return checkAccountLineRepository.findByCheckIdOrderByRowNumAsc(id,pageRequest);
+        return checkAccountLineRepository.findByCheckIdOrderByCheckLineIdAsc(id,pageRequest);
 
     }
 
@@ -234,7 +234,7 @@ public class BillServiceImpl implements BillService {
         lineCellStyle.setBorderRight(BorderStyle.THIN);
         lineCellStyle.setBorderTop(BorderStyle.THIN);
 
-        List<CheckAccountLine> checkAccountLines = checkAccountLineRepository.findByCheckIdOrderByRowNumAsc(id);
+        List<CheckAccountLine> checkAccountLines = checkAccountLineRepository.findByCheckIdOrderByCheckLineIdAsc(id);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         int i =0;

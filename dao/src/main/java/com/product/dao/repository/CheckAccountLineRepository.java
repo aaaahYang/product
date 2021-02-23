@@ -11,9 +11,9 @@ import java.util.List;
 @Repository
 public interface CheckAccountLineRepository extends JpaRepository<CheckAccountLine,Integer> {
 
-    Page<CheckAccountLine> findByCheckIdOrderByRowNumAsc(Integer checkId, Pageable pageable);
+    Page<CheckAccountLine> findByCheckIdOrderByCheckLineIdAsc(Integer checkId, Pageable pageable);
 
-    List<CheckAccountLine> findByCheckIdOrderByRowNumAsc(Integer checkId);
+    List<CheckAccountLine> findByCheckIdOrderByCheckLineIdAsc(Integer checkId);
 
     Integer countByCheckId(Integer checkId);
 

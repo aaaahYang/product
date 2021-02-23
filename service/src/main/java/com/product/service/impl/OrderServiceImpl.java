@@ -203,26 +203,26 @@ public class OrderServiceImpl implements OrderService {
         ResultEnum resultEnum = validOrderStatusA(order.getOrderId());
 
         if(!resultEnum.equals(ResultEnum.SUCCESS)){
-            log.info("发布订单失败");
+            log.info("完结订单失败");
             return ResultVOUtil.fail(resultEnum);
         }
         if(orderLines.size() <= 0){
-            log.info("发布订单失败");
+            log.info("完结订单失败");
             return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"没找到行记录");
         }
 
         for (OrderLine orderLine : orderLines){
             if (orderLine.getActualQuantity() == null || orderLine.getActualQuantity().compareTo(0)< 0){
-                log.info("发布订单失败");
+                log.info("完结订单失败");
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际数量不能为空");
             }
             if (orderLine.getActualQuantity().compareTo(orderLine.getQuantity()) > 0){
-                log.info("发布订单失败");
+                log.info("完结订单失败");
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"实际数量不能多于订单数量");
             }
 
             if (orderLine.getFinishPrice() == null || orderLine.getFinishPrice().compareTo(new BigDecimal("0.0")) < 0){
-                log.info("发布订单失败");
+                log.info("完结订单失败");
                 return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"最终价格不能为空");
             }
 

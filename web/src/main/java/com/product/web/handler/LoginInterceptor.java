@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.product.dao.repository.UserRepository;
 import com.product.entity.User;
@@ -33,20 +36,26 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         crossDomain(request,response);
         String token = request.getHeader("Authorization");
+        if (token == null || token.isEmpty()) token = request.getParameter("token");
 
         if(token != null && !token.isEmpty()){
-            token = token.split(" ")[1];
+            if (token.indexOf(" ")>0){
+                token = token.split(" ")[1];
+            }
+
 
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256("productJWT")).build();
 
-            DecodedJWT decodedJWT = jwtVerifier.verify(token);
-            Date expiresDate =  decodedJWT.getExpiresAt();
+            //DecodedJWT decodedJWT = jwtVerifier.verify(token);
 
-            if (expiresDate.getTime() < System.currentTimeMillis()){
-                setResponse(response, ResultVOUtil.fail(-2,"登录过期"));
-                return false;
+            try{
+                jwtVerifier.verify(token);
+                return true;
+            }catch (AlgorithmMismatchException | TokenExpiredException | SignatureVerificationException e){
+                setResponse(response,ResultVOUtil.fail(-2,"登录验证失败"));
             }
-            return true;
+            //Date expiresDate =  decodedJWT.getExpiresAt();
+            return false;
 
         }
         setResponse(response, ResultVOUtil.fail(-2,"登录验证失败"));
