@@ -78,22 +78,22 @@ public class OrderServiceImpl implements OrderService {
                     predicate = criteriaBuilder.equal(root.get("status"),order.getOrderNum());
                     predicates.add(predicate);
                 }
-                if (order.getStartDate() != null || order.getEndDate() != null){
+                if (order.getStartTime() != null || order.getEndTime() != null){
                     String rootName ;
                     if (order.getDateType() == null) order.setDateType("创建时间");
-                    switch (order.getDateType()){
-                        case "完结时间": rootName = "finishTime";
-                            break;
-                        default:rootName="createTime";
+                    if ("完结时间".equals(order.getDateType())) {
+                        rootName = "finishTime";
+                    } else {
+                        rootName = "createTime";
                     }
-                    if (order.getStartDate() != null && order.getEndDate() != null){
-                        predicate = criteriaBuilder.between(root.get(rootName),order.getStartDate(),order.getEndDate());
+                    if (order.getStartTime() != null && order.getEndTime() != null){
+                        predicate = criteriaBuilder.between(root.get(rootName),order.getStartTime(),order.getEndTime());
                         predicates.add(predicate);
-                    }else if(order.getStartDate() != null){
-                        predicate = criteriaBuilder.greaterThanOrEqualTo(root.get(rootName),order.getStartDate());
+                    }else if(order.getStartTime() != null){
+                        predicate = criteriaBuilder.greaterThanOrEqualTo(root.get(rootName),order.getStartTime());
                         predicates.add(predicate);
                     }else{
-                        predicate = criteriaBuilder.lessThanOrEqualTo(root.get(rootName),order.getEndDate());
+                        predicate = criteriaBuilder.lessThanOrEqualTo(root.get(rootName),order.getEndTime());
                         predicates.add(predicate);
                     }
                 }
@@ -143,6 +143,8 @@ public class OrderServiceImpl implements OrderService {
                 }
                 if (orderLine.getFinishPrice() != null )
                     sumPrice = sumPrice.add(orderLine.getFinishPrice());
+                orderLine.setActualQuantity(orderLine.getQuantity());
+                orderLine.setFinishPrice(orderLine.getDefaultPrice());
                 orderLineRepository.save(orderLine);
             }
         }
