@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
                     predicates.add(predicate);
                 }
                 if (order.getStatus() != null){
-                    predicate = criteriaBuilder.equal(root.get("status"),order.getOrderNum());
+                    predicate = criteriaBuilder.equal(root.get("status"),order.getStatus());
                     predicates.add(predicate);
                 }
                 if (order.getStartTime() != null || order.getEndTime() != null){
@@ -141,10 +141,11 @@ public class OrderServiceImpl implements OrderService {
                     log.info("保存订单失败");
                     return ResultVOUtil.fail(ResultEnum.VALID_ERROR,"订单ID与明细不匹配");
                 }
-                if (orderLine.getFinishPrice() != null )
-                    sumPrice = sumPrice.add(orderLine.getFinishPrice());
                 orderLine.setActualQuantity(orderLine.getQuantity());
                 orderLine.setFinishPrice(orderLine.getDefaultPrice());
+                if (orderLine.getFinishPrice() != null )
+                    sumPrice = sumPrice.add(orderLine.getFinishPrice());
+
                 orderLineRepository.save(orderLine);
             }
         }

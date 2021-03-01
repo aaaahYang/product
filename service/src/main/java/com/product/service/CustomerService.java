@@ -5,6 +5,7 @@ import com.product.entity.CustomerProduct;
 import com.product.entity.Product;
 import com.product.entity.dto.CustomerDTO;
 import com.product.entity.dto.CustomerProductDTO;
+import com.product.entity.vo.PageResult;
 import com.product.entity.vo.ResultVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,7 +53,7 @@ public interface CustomerService {
      * @param product
      * @return
      */
-    List<CustomerProductDTO> findProductList(Integer customerId, Product product);
+    PageResult<CustomerProductDTO> findProductList(Integer customerId, Product product, Integer size, Integer page);
 
 
 }

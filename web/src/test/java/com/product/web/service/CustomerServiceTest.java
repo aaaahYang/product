@@ -9,6 +9,7 @@ import com.product.entity.Product;
 import com.product.entity.dto.CustomerDTO;
 import com.product.entity.dto.CustomerProductDTO;
 import com.product.entity.form.CustomerForm;
+import com.product.entity.vo.PageResult;
 import com.product.entity.vo.ValidList;
 import com.product.service.CustomerService;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.validation.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -39,6 +42,9 @@ public class CustomerServiceTest {
 
     @Autowired
     Validator globalValidator;
+
+    @Autowired
+    EntityManager entityManager;
 
     @Test
     public void findCustomerList(){
@@ -110,9 +116,19 @@ public class CustomerServiceTest {
     void findProductList(){
 
         Product product  = new Product();
-        product.setProductCode("1231124");
-        List list  = customerService.findProductList(5,product);
-        System.out.println(list);
+       // product.setProductCode("1231124");
+        PageResult list  = customerService.findProductList(61,product,10,1);
+        System.out.println(JSON.toJSONString(list));
+    }
+
+    @Test
+    void getCount(){
+        String countQuery = "select count(1) as counts from Customer_Product";
+        Query query = entityManager.createNativeQuery(countQuery);
+        List list = query.getResultList();
+    //    list.get(0);
+        System.out.println(list.get(0));
+
     }
 
 

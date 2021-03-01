@@ -116,12 +116,14 @@ public class CustomerController {
 
     @PostMapping("/productList")
     public ResultVO findProductList(@RequestParam("customerId") Integer customerId,
-                                    @RequestParam(value = "param",required = false) String param){
+                                    @RequestParam(value = "param",required = false) String param,
+                                    @RequestParam(value = "page",defaultValue = "1") Integer page,
+                                    @RequestParam(value = "size",defaultValue = "10") Integer size){
         Product product = JSON.parseObject(param,Product.class);
 
         if (product == null )product = new Product();
 
-        return ResultVOUtil.success(customerService.findProductList(customerId,product));
+        return ResultVOUtil.success(customerService.findProductList(customerId,product,size,page));
 
     }
 

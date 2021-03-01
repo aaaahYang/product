@@ -12,6 +12,7 @@ import com.product.entity.dto.CustomerProductDTO;
 import com.product.entity.dto.CustomerProductDTO2;
 import com.product.entity.enums.ResultEnum;
 import com.product.entity.util.ResultVOUtil;
+import com.product.entity.vo.PageResult;
 import com.product.entity.vo.ResultVO;
 import com.product.service.CustomerService;
 import com.product.service.unit.CommonUtil;
@@ -156,32 +157,50 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerProductDTO> findProductList(Integer customerId, Product product) {
+    public PageResult<CustomerProductDTO> findProductList(Integer customerId, Product product, Integer size, Integer page) {
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(" select  cp.product_Line_Id as product_Line_Id ,cp.customer_Id as customer_Id,cp.product_Code as product_Code , p.product_Name as product_Name " +
                 ", cp.price as price ,p.material_Code as material_Code ,p.unit as unit , p.size_Description as size_Description " +
                 ",cp.remark as remark ,cp.create_Time as create_Time ,cp.update_Time as update_Time ,cp.operator as operator " +
                 " from Customer_Product cp inner join Product p on cp.product_Code = p.product_Code " +
-                " where cp.customer_Id = ?1 ");
+                " where cp.customer_Id = "+customerId+" ");
         if (CommonUtil.validStr(product.getProductCode())){
-            queryBuilder.append(" and p.product_Code like ?2 ");
+            queryBuilder.append(" and p.product_Code like '%"+product.getProductCode()+"%' ");
         }
         if(CommonUtil.validStr(product.getProductName()) ){
-            queryBuilder.append(" and p.product_Name like ?3 ");
+            queryBuilder.append(" and p.product_Name like '%"+product.getProductName()+"%' ");
         }
 
-        Query query = entityManager.createNativeQuery(queryBuilder.toString(), CustomerProductDTO2.class);
+        String countQuery = "select count(1) as counts from ( " + queryBuilder.toString() + " ) a ";
 
-        query.setParameter(1,customerId);
-        if (CommonUtil.validStr(product.getProductCode())){
-            query.setParameter(2,"%"+product.getProductCode()+"%");
-        }
-        if(CommonUtil.validStr(product.getProductName()) ){
-            query.setParameter(3,"%"+product.getProductName()+"%");
-        }
+        Query query = entityManager.createNativeQuery(countQuery);
 
-        return query.getResultList();
+        List countList = query.getResultList();
+        Integer totalElements = Integer.valueOf(String.valueOf(countList.get(0)));
+        Integer start = (page-1) * size;
+
+        queryBuilder.append(" limit "+ start +  ","+ size);
+
+
+
+
+        Query query2 = entityManager.createNativeQuery(queryBuilder.toString(), CustomerProductDTO2.class);
+
+
+
+
+        List<CustomerProductDTO> list = query2.getResultList();
+
+        PageResult<CustomerProductDTO> pageResult = new PageResult<>();
+
+        pageResult.setCurrentPage(page);
+        pageResult.setList(list);
+        pageResult.setSize(list.size());
+        pageResult.setTotalElements(totalElements);
+        pageResult.setTotalPage((int) Math.ceil(totalElements.doubleValue()/size.doubleValue()));
+
+        return  pageResult;
 
     }
 }
