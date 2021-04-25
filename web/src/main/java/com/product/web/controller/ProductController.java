@@ -16,7 +16,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -59,6 +65,25 @@ public class ProductController {
     public ResultVO updateCustomerProduct(Integer customerId){
         log.info("更新客户成品，customerId:"+customerId);
         return productService.updateCustomerProduct(customerId);
+    }
+
+    @RequestMapping("/toExcel")
+    public String toExcel(HttpServletResponse response , Integer[] productIds){
+
+        response.setContentType("application/binary;charset=UTF-8");
+
+        try {
+            response.setHeader("Content-Disposition","attachment;fileName="+ URLEncoder.encode("成品导出.xlsx","UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            log.info("开始导出成品EXCEL");
+            return productService.toExcel(response.getOutputStream(), Arrays.asList(productIds)).getMsg();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResultEnum.EXPORT_EXCEL_ERROR.getMsg();
+        }
     }
 
 }

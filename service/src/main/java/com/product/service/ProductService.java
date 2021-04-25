@@ -5,6 +5,9 @@ import com.product.entity.vo.ResultVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.OutputStream;
+import java.util.List;
+
 public interface ProductService {
 
     /**
@@ -36,6 +39,9 @@ public interface ProductService {
      * @return
      */
     ResultVO updateCustomerProduct(Integer customerId);
+
+
+    ResultVO toExcel(OutputStream outputStream, List<Integer> productIds);
 
 
 }

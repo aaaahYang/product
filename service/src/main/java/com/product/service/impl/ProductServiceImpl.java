@@ -12,15 +12,23 @@ import com.product.entity.enums.ResultEnum;
 import com.product.entity.util.ResultVOUtil;
 import com.product.entity.vo.ResultVO;
 import com.product.service.ProductService;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,6 +120,75 @@ public class ProductServiceImpl implements ProductService {
                 customerProduct.setPrice(product.getPrice());
             }
             customerProductRepository.saveAll(list);
+
+        return ResultVOUtil.success();
+    }
+
+    @Override
+    public ResultVO toExcel(OutputStream outputStream, List<Integer> productIds) {
+        List<Product> result ;
+
+
+
+        if (productIds.size() <= 0){
+            result = productRepository.findAll();
+        }else{
+            result = productRepository.findAllById(productIds);
+        }
+
+        String[] strings = {"成品名称","成品编号","描述","单位","开料尺寸","使用物料"};
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+
+        SXSSFSheet sheet = workbook.createSheet();
+
+        SXSSFRow sxssfRow = sheet.createRow(0);
+        CellStyle headCellStyle = workbook.createCellStyle();
+        headCellStyle.setAlignment(HorizontalAlignment.CENTER);
+        headCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        Font headCellFont = workbook.createFont();
+        headCellFont.setBold(true);
+        headCellStyle.setFont(headCellFont);
+        headCellStyle.setBorderBottom(BorderStyle.THIN);
+        headCellStyle.setBorderLeft(BorderStyle.THIN);
+        headCellStyle.setBorderRight(BorderStyle.THIN);
+        headCellStyle.setBorderTop(BorderStyle.THIN);
+
+        SXSSFCell sxssfCell;
+
+        for(int i =0 ; i< strings.length ; i++){
+            sxssfCell = sxssfRow.createCell(i);
+            sxssfCell.setCellValue(strings[i]);
+            sxssfCell.setCellStyle(headCellStyle);
+        }
+
+        CellStyle lineCellStyle = workbook.createCellStyle();
+        lineCellStyle.setBorderBottom(BorderStyle.THIN);
+        lineCellStyle.setBorderLeft(BorderStyle.THIN);
+        lineCellStyle.setBorderRight(BorderStyle.THIN);
+        lineCellStyle.setBorderTop(BorderStyle.THIN);
+        int i =0;
+        for (Product product : result){
+            sxssfRow = sheet.createRow(i+1);
+
+            sxssfRow.createCell(0).setCellValue(product.getProductName());
+            sxssfRow.createCell(1).setCellValue(product.getProductCode());
+            sxssfRow.createCell(2).setCellValue(product.getProductDescription());
+            sxssfRow.createCell(3).setCellValue(product.getUnit());
+            sxssfRow.createCell(4).setCellValue(product.getSizeDescription());
+            sxssfRow.createCell(5).setCellValue(product.getMaterialCode());
+
+        }
+
+        try {
+            workbook.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            log.info("导出成品失败");
+            e.printStackTrace();
+            return ResultVOUtil.fail(ResultEnum.EXPORT_EXCEL_ERROR);
+        }
 
         return ResultVOUtil.success();
     }
